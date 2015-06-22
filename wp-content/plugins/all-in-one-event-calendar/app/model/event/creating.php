@@ -88,11 +88,14 @@ class Ai1ec_Event_Creating extends Ai1ec_Base {
 		$show_coordinates = isset( $_POST['ai1ec_input_coordinates'] )? 1                                             : 0;
 		$longitude        = isset( $_POST['ai1ec_longitude'] )        ? $_POST['ai1ec_longitude']                     : '';
 		$latitude         = isset( $_POST['ai1ec_latitude'] )         ? $_POST['ai1ec_latitude']                      : '';
+		$banner_image     = isset( $_POST['ai1ec_banner_image'] )     ? $_POST['ai1ec_banner_image']                  : '';
 
-		$rrule  = NULL;
-		$exrule = NULL;
-		$exdate = NULL;
+		$rrule  = null;
+		$exrule = null;
+		$exdate = null;
+		$rdate  = null;
 
+		$this->_remap_recurrence_dates();
 		// if rrule is set, convert it from local to UTC time
 		if (
 			isset( $_POST['ai1ec_repeat'] ) &&
@@ -101,23 +104,30 @@ class Ai1ec_Event_Creating extends Ai1ec_Base {
 			$rrule = $_POST['ai1ec_rrule'];
 		}
 
-		// if exrule is set, convert it from local to UTC time
-		if (
-			isset( $_POST['ai1ec_exclude'] ) &&
-			! empty( $_POST['ai1ec_exclude'] ) &&
-			NULL !== $rrule // no point for exclusion, if repetition is not set
-		) {
-			$exrule = $this->_registry->get( 'recurrence.rule' )->merge_exrule(
-				$_POST['ai1ec_exrule'],
-				$_POST['ai1ec_rrule']
-			);
-		}
-		// if exdate is set, convert it from local to UTC time
+		// add manual dates
 		if (
 			isset( $_POST['ai1ec_exdate'] ) &&
 			! empty( $_POST['ai1ec_exdate'] )
 		) {
 			$exdate = $_POST['ai1ec_exdate'];
+		}
+		if (
+			isset( $_POST['ai1ec_rdate'] ) &&
+			! empty( $_POST['ai1ec_rdate'] )
+		) {
+			$rdate = $_POST['ai1ec_rdate'];
+		}
+
+		// if exrule is set, convert it from local to UTC time
+		if (
+			isset( $_POST['ai1ec_exclude'] ) &&
+			! empty( $_POST['ai1ec_exclude'] ) &&
+			( null !== $rrule || null !== $rdate ) // no point for exclusion, if repetition is not set
+		) {
+			$exrule = $this->_registry->get( 'recurrence.rule' )->merge_exrule(
+				$_POST['ai1ec_exrule'],
+				$rrule
+			);
 		}
 
 		$is_new = false;
@@ -155,7 +165,8 @@ class Ai1ec_Event_Creating extends Ai1ec_Base {
 		if ( $instant_event ) {
 			$event->set_no_end_time();
 		} else {
-			$event->set( 'end',          $end_time_entry );
+			$event->set( 'end',           $end_time_entry );
+			$event->set( 'instant_event', false );
 		}
 		$event->set( 'timezone_name',    $timezone_name );
 		$event->set( 'allday',           $all_day );
@@ -176,10 +187,13 @@ class Ai1ec_Event_Creating extends Ai1ec_Base {
 		$event->set( 'recurrence_rules', $rrule );
 		$event->set( 'exception_rules',  $exrule );
 		$event->set( 'exception_dates',  $exdate );
+		$event->set( 'recurrence_dates', $rdate );
 		$event->set( 'show_coordinates', $show_coordinates );
 		$event->set( 'longitude',        trim( $longitude ) );
 		$event->set( 'latitude',         trim( $latitude ) );
 		$event->set( 'ical_uid',         $event->get_uid() );
+
+		update_post_meta( $post_id, 'ai1ec_banner_image', $banner_image );
 
 		// let other extensions save their fields.
 		do_action( 'ai1ec_save_post', $event );
@@ -235,4 +249,75 @@ class Ai1ec_Event_Creating extends Ai1ec_Base {
 		);
 		return $post_id;
 	}
+
+	/**
+	 * Cleans calendar shortcodes from event content.
+	 *
+	 * @param array $data    An array of slashed post data.
+	 * @param array $postarr An array of sanitized, but otherwise unmodified post data.
+	 *
+	 * @return array An array of slashed post data.
+	 */
+	public function wp_insert_post_data( $data ) {
+		global $shortcode_tags;
+		if (
+			! isset( $data['post_type'] ) ||
+			! isset( $data['post_content'] ) ||
+			AI1EC_POST_TYPE !== $data['post_type'] ||
+			empty( $shortcode_tags ) ||
+			! is_array( $shortcode_tags ) ||
+			false === strpos( $data['post_content'], '[' )
+		) {
+			return $data;
+		}
+		$pattern              = get_shortcode_regex();
+		$data['post_content'] = preg_replace_callback(
+			"/$pattern/s",
+			array( $this, 'strip_shortcode_tag' ),
+			$data['post_content']
+		);
+		return $data;
+	}
+
+	/**
+	 * Reutrns shortcode or stripped content for given shortcode.
+	 * Currently regex callback function passes as $tag argument 7-element long
+	 * array.
+	 * First element ($tag[0]) is not modified full shortcode text.
+	 * Third element ($tag[2]) is pure shortcode identifier.
+	 * Sixth element ($tag[5]) contains shortcode content if any
+	 * [ai1ec_test]content[/ai1ec].
+	 *
+	 * @param array $tag Incoming data.
+	 *
+	 * @return string Shortcode replace tag.
+	 */
+	public function strip_shortcode_tag( $tag ) {
+		if (
+			count( $tag ) < 7 ||
+			'ai1ec' !== substr( $tag[2], 0, 5 ) ||
+			! apply_filters( 'ai1ec_content_remove_shortcode_' . $tag[2], false )
+		) {
+			return $tag[0];
+		}
+		return $tag[5];
+	}
+
+	protected function _remap_recurrence_dates() {
+		if (
+			isset( $_POST['ai1ec_exclude'] ) &&
+			'EXDATE' === substr( $_POST['ai1ec_exrule'], 0, 6 )
+		) {
+			$_POST['ai1ec_exdate'] = substr( $_POST['ai1ec_exrule'], 7 );
+			unset( $_POST['ai1ec_exclude'],  $_POST['ai1ec_exrule'] );
+		}
+		if (
+			isset( $_POST['ai1ec_repeat'] ) &&
+			'RDATE' === substr( $_POST['ai1ec_rrule'], 0, 5 )
+		) {
+			$_POST['ai1ec_rdate'] = substr( $_POST['ai1ec_rrule'], 6 );
+			unset( $_POST['ai1ec_repeat'],  $_POST['ai1ec_rrule'] );
+		}
+	}
+
 }

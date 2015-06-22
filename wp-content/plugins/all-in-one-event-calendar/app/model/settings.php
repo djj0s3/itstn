@@ -47,12 +47,18 @@ class Ai1ec_Settings extends Ai1ec_App {
 		$renderer,
 		$version = '2.0.0'
 	) {
+
 		if ( 'deprecated' === $type ) {
 			unset( $this->_options[$option] );
 		} else if (
 			! isset( $this->_options[$option] ) ||
 			! isset( $this->_options[$option]['version'] ) ||
-			(string)$this->_options[$option]['version'] !== (string)$version
+			(string)$this->_options[$option]['version'] !== (string)$version ||
+			( isset( $renderer['label'] ) &&
+				(string)$this->_options[$option]['renderer']['label'] !== (string)$renderer['label'] ) ||
+			( isset( $renderer['help'] ) &&
+				( ! isset( $this->_options[$option]['renderer']['help'] ) || // handle the case when you are adding help
+				(string)$this->_options[$option]['renderer']['help'] !== (string)$renderer['help'] ) )
 		) {
 			$this->_options[$option] = array(
 				'value'    => ( isset( $this->_options[$option] ) )
@@ -214,6 +220,17 @@ class Ai1ec_Settings extends Ai1ec_App {
 		}
 	}
 
+
+	/**
+	 * Do things needed on every plugin upgrade.
+	 */
+	public function perform_upgrade_actions() {
+		$option = $this->_registry->get( 'model.option' );
+		$option->set( 'ai1ec_force_flush_rewrite_rules',      true, true );
+		$option->set( 'ai1ec_invalidate_css_cache',           true, true );
+		$option->set( Ai1ec_Theme_Loader::OPTION_FORCE_CLEAN, true, true );
+	}
+
 	/**
 	 * Hide an option by unsetting it's renderer
 	 *
@@ -250,6 +267,34 @@ class Ai1ec_Settings extends Ai1ec_App {
 	}
 
 	/**
+	 * Observes wp_options changes. If any matches related setting then
+	 * updates that setting.
+	 *
+	 * @param string $option    Name of the updated option.
+	 * @param mixed  $old_value The old option value.
+	 * @param mixed  $value     The new option value.
+	 *
+	 * @return void Method does not return.
+	 */
+	public function wp_options_observer( $option, $old_value, $value ) {
+		$options = $this->get_options();
+		if (
+			self::WP_OPTION_KEY === $option ||
+			empty( $options )
+		) {
+			return;
+		}
+
+		if (
+			isset( $options[$option] ) &&
+			'wp_option' === $options[$option]['type'] &&
+			$this->get( $option ) !== $value
+		) {
+			$this->set( $option, $value );
+		}
+	}
+
+	/**
 	 * Initiate options map from storage.
 	 *
 	 * @return void Return from this method is ignored.
@@ -267,6 +312,8 @@ class Ai1ec_Settings extends Ai1ec_App {
 			}
 		}
 		$upgrade = false;
+		// check for updated translations
+		$this->_register_standard_values();
 		if ( // process meta updates changes
 			empty( $values ) || (
 				false !== $test_version &&
@@ -278,27 +325,16 @@ class Ai1ec_Settings extends Ai1ec_App {
 			$this->_change_update_status( true );
 			$upgrade = true;
 		} else if ( $values instanceof Ai1ec_Settings ) { // process legacy
-			$this->_register_standard_values();
 			$this->_parse_legacy( $values );
 			$this->_change_update_status( true );
 			$upgrade = true;
 		}
 		if ( true === $upgrade ) {
-			$this->_perform_upgrade_actions();
+			$this->perform_upgrade_actions();
 		}
 		$this->_registry->get( 'controller.shutdown' )->register(
 			array( $this, 'shutdown' )
 		);
-	}
-
-	/**
-	 * Do things needed on every plugin upgrade.
-	 */
-	protected function _perform_upgrade_actions() {
-        $option = $this->_registry->get( 'model.option' );
-		$option->set( 'ai1ec_force_flush_rewrite_rules',      true, true );
-		$option->set( 'ai1ec_invalidate_css_cache',           true, true );
-		$option->set( Ai1ec_Theme_Loader::OPTION_FORCE_CLEAN, true, true );
 	}
 
 	/**
@@ -332,7 +368,7 @@ class Ai1ec_Settings extends Ai1ec_App {
 				'default'  => array(),
 			),
 			'show_tracking_popup' => array(
-				'type'    => 'bool',
+				'type'    => 'deprecated',
 				'default' => true,
 			),
 			'calendar_page_id' => array(
@@ -421,7 +457,6 @@ class Ai1ec_Settings extends Ai1ec_App {
 					'item'      => 'viewing-events',
 					'label'     => Ai1ec_I18n::__( 'Timezone' ),
 					'options'   => 'Ai1ec_Date_Timezone:get_timezones',
-					'condition' => 'Ai1ec_Date_Timezone:is_timezone_not_set',
 				),
 				'default'  => $this->_registry->get( 'model.option' )->get(
 					'timezone_string'
@@ -584,6 +619,18 @@ class Ai1ec_Settings extends Ai1ec_App {
 				),
 				'default'  => false,
 			),
+			'disable_get_calendar_button' => array(
+				'type' => 'bool',
+				'renderer' => array(
+					'class' => 'checkbox',
+					'tab'   => 'viewing-events',
+					'item'  => 'viewing-events',
+					'label' => Ai1ec_I18n::__(
+						'Hide <strong>Get a Timely Calendar</strong> button'
+					)
+				),
+				'default'  => true,
+			),
 			'hide_maps_until_clicked' => array(
 				'type' => 'bool',
 				'renderer' => array(
@@ -604,6 +651,9 @@ class Ai1ec_Settings extends Ai1ec_App {
 					'item'  => 'viewing-events',
 					'label' => Ai1ec_I18n::__(
 						' <strong>Affix filter menu</strong> to top of window when it scrolls out of view'
+					),
+					'help'  => Ai1ec_I18n::__(
+						'Only applies to first visible calendar found on the page.'
 					),
 				),
 				'default'  => false,
@@ -834,6 +884,21 @@ class Ai1ec_Settings extends Ai1ec_App {
 				),
 				'default'  => true,
 			),
+			'ai1ec_use_frontend_rendering' => array(
+				'type' => 'bool',
+				'renderer' => array(
+					'class' => 'checkbox',
+					'tab'   => 'advanced',
+					'item'  => 'advanced',
+					'label' => Ai1ec_I18n::__(
+						'Use frontend rendering.'
+					),
+					'help'  => Ai1ec_I18n::__(
+						'Renders calendar views on the client rather than the server; can improve performance.'
+					),
+				),
+				'default'  => false,
+			),
 			'render_css_as_link' => array(
 				'type' => 'bool',
 				'renderer' => array(
@@ -905,7 +970,22 @@ class Ai1ec_Settings extends Ai1ec_App {
 					),
 				),
 				'default' => '',
-			)
+			),
+			'always_use_calendar_timezone' => array(
+				'type'     => 'bool',
+				'renderer' => array(
+					'class'  => 'checkbox',
+					'tab'    => 'viewing-events',
+					'item'   => 'viewing-events',
+					'label'  => Ai1ec_I18n::__(
+						'Display events in <strong>calendar time zone</strong>'
+					),
+					'help'  => Ai1ec_I18n::__(
+						'If this box is checked events will appear in the calendar time zone with time zone information displayed on the event details page.'
+					),
+				),
+				'default'  => false,
+			),
 		);
 	}
 

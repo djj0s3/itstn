@@ -24,12 +24,14 @@ class Ai1ec_Event extends Ai1ec_Base {
 	 *            [-1] - only `get` (for storage) operations require care.
 	 */
 	protected $_swizzable = array(
-		'contact_url'   => 0,
-		'cost'          => 0,
-		'ticket_url'    => 0,
-		'start'         => -1,
-		'end'           => -1,
-		'timezone_name' => -1,
+		'contact_url'      => -1, // strip on save/import
+		'cost'             => 0,
+		'ticket_url'       => -1, // strip on save/import
+		'start'            => -1,
+		'end'              => -1,
+		'timezone_name'    => -1,
+		'recurrence_dates' => 1,
+		'exception_dates'  => 1,
 	);
 
 	/**
@@ -158,6 +160,15 @@ class Ai1ec_Event extends Ai1ec_Base {
 			$this->set( 'post', (object)$data );
 		}
 		return $this;
+	}
+
+	/**
+	 * Delete the events from all tables
+	 */
+	public function delete() {
+		// delete post (this will trigger deletion of cached events, and
+		// remove the event from events table)
+		wp_delete_post( $this->get( 'post_id' ), true );
 	}
 
 	/**
@@ -343,58 +354,54 @@ class Ai1ec_Event extends Ai1ec_Base {
 	}
 
 	/**
-	 * Convert URL to a loggable form
+	 * Twig method for retrieving avatar.
 	 *
-	 * @param string $url    URL to which access must be counted
-	 * @param string $intent Char definition: 'b' - buy, 'd' - details
+	 * @param  bool   $wrap_permalink Whether to wrap avatar in <a> element or not
 	 *
-	 * @return string Loggable URL form
-	 *
-	 * @staticvar array $options Defaut options to persist between instances.
+	 * @return string Avatar markup
 	 */
-	protected function _make_url_loggable( $url, $intent ) {
-		static $options = NULL;
-		$url = trim( $url );
-		if ( ! $url || ! filter_var( $url, FILTER_VALIDATE_URL ) ) {
-			return $url;
-		}
-		if ( ! isset( $options ) ) {
-			$options = array(
-				'l' => NULL,
-				'e' => ( false !== strpos( AI1EC_VERSION, 'pro' ) ) ? 'p' : 's',
-				'v' => (string)AI1EC_VERSION,
-				'i' => NULL,
-				'c' => NULL,
-				'o' => (string)get_site_url(),
+	public function getavatar( $wrap_permalink = true ) {
+		return $this->_registry->
+			get( 'view.event.avatar' )->get_event_avatar(
+				$this,
+				$this->_registry->get( 'view.calendar.fallbacks' )->get_all(),
+				'',
+				$wrap_permalink
 			);
+	}
+
+	/**
+	 * Returns whether Event has geo information.
+	 *
+	 * @return bool True or false.
+	 */
+	public function has_geoinformation() {
+		$latitude  = floatval( $this->get( 'latitude') );
+		$longitude = floatval( $this->get( 'longitude' ) );
+		return (
+			(
+				$latitude >= 0.000000000000001 ||
+				$latitude <= -0.000000000000001
+			) &&
+			(
+				$longitude >= 0.000000000000001 ||
+				$longitude <= -0.000000000000001
+			)
+		);
+	}
+
+	protected function _handle_property_construct_recurrence_dates( $value ) {
+		if ( $value ) {
+			$this->_entity->set( 'recurrence_rules', 'RDATE=' . $value );
 		}
-		$options['l'] = (string)$url;
-		$options['i'] = (string)$intent;
-		$options['c'] = (string)$this->get( 'cost' );
-		return AI1EC_REDIRECTION_SERVICE .
-			base64_encode( json_encode( $options ) );
+		return $value;
 	}
 
-	/**
-	 * Make `Ticket URL` loggable
-	 *
-	 * @param string $value Ticket URL stored in database
-	 *
-	 * @return bool Success
-	 */
-	public function _handle_property_construct_ticket_url( $value ) {
-		return $this->_make_url_loggable( $value, 'b' );
-	}
-
-	/**
-	 * Make `Contact URL` loggable
-	 *
-	 * @param string $value Contact URL stored in database
-	 *
-	 * @return bool Success
-	 */
-	public function _handle_property_construct_contact_url( $value ) {
-		return $this->_make_url_loggable( $value, 'd' );
+	protected function _handle_property_construct_exception_dates( $value ) {
+		if ( $value ) {
+			$this->_entity->set( 'exception_rules', 'EXDATE=' . $value );
+		}
+		return $value;
 	}
 
 	/**
@@ -435,9 +442,13 @@ class Ai1ec_Event extends Ai1ec_Base {
 	 * @staticvar string $format Cached format.
 	 */
 	public function get_uid() {
+		$ical_uid = $this->get( 'ical_uid' );
+		if ( ! empty( $ical_uid ) ) {
+			return $ical_uid;
+		}
 		static $format = null;
 		if ( null === $format ) {
-			$site_url = parse_url( get_site_url() );
+			$site_url = parse_url( ai1ec_get_site_url() );
 			$format   = 'ai1ec-%d@' . $site_url['host'];
 			if ( isset( $site_url['path'] ) ) {
 				$format .= $site_url['path'];
@@ -521,6 +532,7 @@ class Ai1ec_Event extends Ai1ec_Base {
 	 * @return int            The post_id of the new or existing event.
 	 */
 	function save( $update = false ) {
+		do_action( 'ai1ec_pre_save_event', $this, $update );
 		if ( ! $update ) {
 			$response = apply_filters( 'ai1ec_event_save_new', $this );
 			if ( is_wp_error( $response ) ) {
@@ -540,7 +552,6 @@ class Ai1ec_Event extends Ai1ec_Base {
 			$this->set_no_end_time();
 		}
 		if ( $post_id ) {
-
 			$success = false;
 			if ( ! $update ) {
 				$success = $dbi->insert(
@@ -572,26 +583,38 @@ class Ai1ec_Event extends Ai1ec_Base {
 			$this->set( 'post_id', $post_id );
 			$columns['post_id'] = $post_id;
 
-			$taxonomy = $this->_registry->get(
-				'model.event.taxonomy',
-				$post_id
-			);
-			$taxonomy->set_categories( $this->get( 'categories' ) );
-			$taxonomy->set_tags(       $this->get( 'tags' ) );
-
-			if (
-				$feed = $this->get( 'feed' ) &&
-				isset( $feed->feed_id )
-			) {
-				$taxonomy->set_feed( $feed );
-			}
-
 			// =========================
 			// = Insert new event data =
 			// =========================
 			if ( false === $dbi->insert( $table_name, $columns, $format ) ) {
 				return false;
 			}
+		}
+
+		$taxonomy = $this->_registry->get(
+			'model.event.taxonomy',
+			$post_id
+		);
+		$cats = $this->get( 'categories' );
+		if (
+			is_array( $cats ) &&
+			! empty( $cats )
+		) {
+			$taxonomy->set_categories( $cats );
+		}
+		$tags = $this->get( 'tags' );
+		if (
+			is_array( $tags ) &&
+			! empty( $tags )
+		) {
+			$taxonomy->set_tags( $tags );
+		}
+
+		if (
+			$feed = $this->get( 'feed' ) &&
+			isset( $feed->feed_id )
+		) {
+			$taxonomy->set_feed( $feed );
 		}
 
 		// give other plugins / extensions the ability to do things

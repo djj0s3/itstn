@@ -56,8 +56,8 @@ abstract class Ai1ec_Base_License_Controller extends Ai1ec_Base_Extension_Contro
 					'licenses' => Ai1ec_I18n::__( 'Licenses' ),
 				),
 			);
-		} else if ( ! isset( $tabs['extensions']['items']['license'] ) ) {
-			$tabs['extensions']['items']['license'] = Ai1ec_I18n::__( 'Licences' );
+		} else if ( ! isset( $tabs['extensions']['items']['licenses'] ) ) {
+			$tabs['extensions']['items']['licenses'] = Ai1ec_I18n::__( 'Licences' );
 		}
 		return $tabs;
 	}
@@ -82,19 +82,19 @@ abstract class Ai1ec_Base_License_Controller extends Ai1ec_Base_Extension_Contro
 				'item_name'  => urlencode( $this->get_name() ),// the name of our product in EDD,
 				'url'        => home_url()
 			);
-			
+
 			// Call the custom API.
 			$response = wp_remote_get( add_query_arg( $api_params, $this->_store ) );
-			
+
 			// make sure the response came back okay
 			if ( is_wp_error( $response ) ) {
 				return false;
 			}
-			
+
 			// decode the license data
 			$license_data = json_decode( wp_remote_retrieve_body( $response ) );
 			// $license_data->license will be either "active" or "inactive"
-			
+
 			$this->_registry->get( 'model.settings' )
 				->set( $this->_licence_status, $license_data->license );
 		}
@@ -128,7 +128,8 @@ abstract class Ai1ec_Base_License_Controller extends Ai1ec_Base_Extension_Contro
 		$license_key = $this->_registry->get( 'model.settings' )
 			->get( $this->_licence );
 		// setup the updater
-		$edd_updater = new EDD_SL_Plugin_Updater(
+		$edd_updater = $this->_registry->get(
+			'edd.updater',
 			$this->_store,
 			$this->get_file(),
 			array(

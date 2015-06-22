@@ -3,108 +3,38 @@ Contributors: hubrik, vtowel, yani.iliev, nicolapeluchetti, jbutkus, lpawlik, ba
 Tags: calendar, events, ics, ics feed, wordpress ical importer, google
 calendar, ical, iCalendar, all-in-one, events sync, events widget,
 calendar widget
-Requires WorPress at least: 3.5
-Tested up to: 3.9.1
-Stable tag: 2.1.4
+Requires WordPress at least: 3.5
+Tested up to: 4.1
+Stable tag: 2.2.1
 License: GNU General Public License, version 3 (GPL-3.0)
 
 A calendar system with many views, upcoming events widget, color-coded
-categories, recurrence, and import/export of facebook events and .ics
-feeds.
+categories, recurrence, and import/export of .ics feeds.
 
 == Description ==
 
-Welcome to the [All-in-One Event Calendar Plugin](http://time.ly/),
-from [Timely](http://time.ly/). The All-in-One Event Calendar is a
-beautiful way to list your events in WordPress and easily share them
-with the rest of the world.
+The [All-in-One Event Calendar](http://time.ly/) from
+[Timely](http://time.ly/) is a beautiful way to list your events in
+WordPress and easily share them with the rest of the world. Our
+calendar system combines clean visual design with a powerful set of
+features to create the most advanced calendar system available for
+WordPress.
 
-Our calendar system combines a clean visual design, solid
-architectural patterns and a powerful set of features to create the
-most advanced calendar system available for WordPress. 
+= Get Add-ons =
 
-Download the free Core edition at [time.ly](http://time.ly/) and
-choose from 3 custom designed themes for your Calendar, or develop
-your own! Additionally, you can install add-ons that give you
-Posterboard view, Facebook integration, inline Calendar Theme editing
-and more.
+Download add-ons at [time.ly](http://time.ly) to get more features,
+like [Extended Views](https://time.ly/downloads/extended-views/),
+[Frontend Submission
+form](https://time.ly/downloads/front-end-event-form/),
+[SuperWidget](https://time.ly/downloads/superwidget/),
+[Venues](https://time.ly/downloads/venues/), [Twitter
+integration](https://time.ly/downloads/twitter/) and
+[more](https://time.ly/wordpress-calendar-plugin/addons/).
 
-= New in version 2.0 =
+= Import and Export Events =
 
-* Made plugin modular, allowing users to install extensions for
-required features.
-* Improved performance by delaying resources initialization until
-needed. 
-* Implemented new theme layer using Twig
-(http://twig.sensiolabs.org/), which will allow the Calendar to render
-new views in JavaScript.
-* Created time manipulation layer, which will allow editing of
-event's timezone, and also leverage system ability to track timezone
-definition changes when processing, or rendering of time entity comes
-into action.
-* Timezone information is stored with the event during event creation
-and/or import ensuring event is treated with respect to it's original
-timezone.
-* Implemented soft-deactivation feature to help prevent fatal errors
-which notifies user if an error occurs and makes plugin behave as if
-it was deactivated.
-* Allowing smooth interoperability with 3rd party cache plugins
-primarily by not providing another cache layer which would cripple
-behaviour of former ones.
-* Added thin compatibility layer which supports up-to date
-PHP/WordPress versions and provides support for older releases.
-* Created calendar feeds extension layer, which is meant to allow
-adding new types of feeds in addition to already existing ICS.
-* Created configuration abstraction layer, which is safe to use with
-3rd party caching plugins.
-* Fixed repeated cron additions, which was causing intensive database
-writes in some configurations.
-* Extended meta-data management layer to save from unnecessary calls
-to underlying database.
-* Implemented robust and extensible filtering layer allowing to create
-new filter types on demand.
-* Improved internationalization support with respect to WordPress and
-3rd party plugins behaviour.
-* Updated to Bootstrap 3 for better performance and responsiveness. 
-* Moved Front End Event Submission, Superwidget, Platform Mode,
-Posterboard, Stream View, Agenda View, Facebook and Twitter to
-extensions. Please view their release notes for details.
-* Fixed DST issue causing times to shift one hour.
-* Clicking the browser back button returns site visitors to view they
-were on.
-* Fixed issue where the widget would not display a full day's events.
-* Fully hiding password protected events internal description.
-* Added improved database migration method which should allow for safe
-database schema changes.
-* Improved error messages rendering to include more details for
-tracing.
-
-= Calendar Features For Users =
-
-This plugin has many features we hope will prove useful to users,
-including:
-
-* **Recurring** events.
-* **Filtering** by event category or tag.
-* Easy **sharing** with Google Calendar, Apple iCal, MS Outlook and
-any other system that accepts iCalendar (.ics) feeds.
-* Embedded **Google Maps**.
-* **Color-coded** events based on category.
-* Featured **event images and category images**.
-* **Month**, **week**, **day**, **agenda**, and **posterboard**
-**views.
-* **Upcoming Events** widget.
-* Direct links to **filtered calendar views**.
-* **Facebook** integration.
-* Inline **Calendar Theme editor**.
-
-= Features for Website and Blog Owners =
-
-* Import other calendars automatically to display in your calendar.
-* Categorize and tag imported calendar feeds automatically.
-* Events from [The Events
-Calendar](http://wordpress.org/extend/plugins/the-events-calendar/).
-* Plugin can also be easily imported.
+Timely offers full ics/ical support. You can import events from other
+calendars and offer users the ability to subscribe to your calendar.
 
 Importing and exporting iCalendar (.ics) feeds is one of the strongest
 features of the All-in-One Event Calendar system. Enter an event on
@@ -112,33 +42,68 @@ one site and you can have it appear automatically in another website's
 calendar. You can even send events from a specific category or tag (or
 combination of categories and tags).
 
-Why is this cool? It allows event creators to create one event and
-have it displayed on a few or thousands of calendars with no extra
-work. And it also allows calendar owners to populate their calendar
-from other calendar feeds without having to go through the hassle of
-creating new events. For example, a soccer league can send its game
-schedule to a community sports calendar, which, in turn, can send only
-featured games (from all the sports leagues it aggregates) to a
-community calendar, which features sports as just one category.
+= Even More Features =
 
-= Additional Features =
+This plugin has many features we hope will prove useful to users,
+including:
 
-The All-in-One Event Calendar Plugin also has a few features that will
-prove useful for website and blog owners:
-
+* **Recurring** events including complex patterns.
+* **Filtering** by event category or tag.
+* Easy **sharing** with Google Calendar, Apple iCal, MS Outlook and
+any other system that accepts iCalendar (.ics) feeds.
+* Embedded **Google Maps**.
+* **Color-coded** events based on category.
+* Featured **event images** and **category images**.
+* **Month**, **week**, **day**, **agenda**, and **posterboard**
+views.
+* **Upcoming Events** widget.
+* Direct links to **filtered calendar views**.
+* **Theme** options to customize your calendar appearence.
+* Inline **Calendar Theme editor**.
+* Import other calendars automatically to display in your calendar.
+* Categorize and tag imported calendar feeds automatically.
+* Plugin can also be easily imported.
 * Each event is SEO-optimized.
 * Each event links to the original calendar.
 * Your calendar can be embedded into a WordPress page without needing
 to create template files or modify the theme.
 
-= Video =
+= Languages =
+
+Timely is supported by a committed group of translators offering
+[languages files](http://translate.time.ly/) in numerous languages
+including:
+
+* German
+* French
+* Russian
+* Italian
+* Dutch
+* Japanese
+* Portuguese
+* Swedish
+* Polish
+* Danish
+* Spanish
+* Bulgarian
+* Greek
+* Hungarian
+* Latvian
+
+You can help translate by going to
+[translate.time.ly](http://translate.time.ly).
+
+= Become the Hub of your community =
+
+If your goal is to run a community event calendar, Timely's All-in-one
+Event Calendar has everything you'll need.
 
 http://vimeo.com/55904173
 
 = Helpful Links =
 
-* [**Get help from our Support Site »**](http://support.time.ly).
-* [**Check out our great community forum »**](http://community.time.ly).
+* [**Access our User Guide**](http://time.ly/document/user-guide/).
+* [**Visit our Community Forums**](https://time.ly/forums/).
 
 == Frequently Asked Questions ==
 
@@ -172,6 +137,213 @@ http://vimeo.com/55904173
 
 == Changelog ==
 
+= Version 2.2.1 =
+* Fixed ICS issue where old events were imported when option was not
+checked
+* Fixed issue where the map covered other fields when creating a new
+event
+* Fixed an issue where events occuring on the last day of a month would
+appear on the first of the month
+* Posterboad will now show the event time in the local timezone
+* Removed browser request to share user's location details
+
+= Version 2.2.0 =
+* Implemented frontend renderring for improved performance
+* Implemented Google’s new NoCaptcha, a better way of detecting spam
+bots
+* Allow users to create recurring events with no pattern by clicking
+dates in the calendar
+* Created a new menu item “Organize” that contains Categories, Tags,
+Venues, and Filter Groups
+* New plugin that allows filter search by keyword for Hubs
+* Added the ability to select colours for terms of Filter Groups
+* Added the ability to map imported taxonomy to existing Filter Group
+terms
+* Exposed Filter Groups on the Frontend Event Submission form
+* Improved JavaScript components loading speed
+* Created a workaround option for dealing with a bug in Google’s
+handling of timezones on .ics feeds
+* Optimized cache usage: regenerating files only when a change
+justifies it
+* Categories/tags information is updated during Feeds import
+* The subscribe to calendar button now drops up, reducing theme
+conflicts
+* Made it possible to easily introduce template modifications
+* Improved display of event dates to ensure year will show
+* Improved URLs handling when WordPress is upgraded to use SSL
+addresses
+* Made it possible to have Powered by Time.ly logo on a calendar
+* Improved tooltip behaviour and removed them from mobile
+* Clarified the option to import past events
+* Persistent notices now contain easily accessible information helping
+determine the cause and resolution for the message
+* Improved calendar embedding options by making it more compatible
+with different platforms
+* Improved menu labels for Frontend Event Submissions
+* Made it possible to modify values that are passed to templates
+* Made it possible to filter upcoming events widget by more values
+* Clarified where it is appropriate to use JavaScript widgets vs
+WordPress widgets or shortcodes
+* Improved database queries performance (affects large deployments)
+* Improved add-on dependency message
+* Fixed issue where it was impossible to remove a color from a
+category
+* Fixed issue where calendar navigation stopped responding
+* Fixed issue where on some servers JavaScript was not fully rendered
+* Improved CSS handling so that it would not be recompiled unless
+necessary
+* Improved compatibility with iCalendar applications by removing end
+time from events that have none
+* Made it possible to set an end time on events that were previously
+set to no end time
+* Fixed an issue where settings translation was not updatable
+* Fixed issue where the “now” marker in week and day view was missing
+* Fixed a conflict with the views dropdown and the subscribe button
+* Fixed issue where multi-day events were displayed incorrectly in day
+view
+* Fixed a conflict where WPML and a static calendar homepage resulted
+in a 404
+* Fixed recurring events import: detecting modifications with greater
+accuracy
+* Temporary disabled microformatting to avoid conflicts with 3rd party
+plugins
+* Fixed an issue where the licence key menu is not available if the
+add-on has no settings
+* Next/Prev navigation is present again at the bottom of the calendar
+* Fixed an issue with date parsing in PHP version 5.2.4
+* Fixed an issue where “back to calendar” and “buy tickets” buttons
+were missing
+* Fixed an issue where featured image was not visible on the event
+details page
+* Fixed a plugin conflict with the popular “Gallery” plugin
+* Fixed an issue where event footers were not being rendered
+* In some cases, if browser identifier is unavailable, invalid
+JavaScript markup was being produced
+* Make sure timezone setting is respect whenever it’s made in site, or
+calendar settings
+* In case of rendering error user will be presented with a friendly
+message and calendar will try to re-configure
+* Fixed an issue where LESS would fail to compile on install
+* Fixed error which was appearing when choosing calendar viewable
+hours which do not pass validation
+* Editing event imported from Feed doesn’t break it’s relationship
+with feed
+* Fixed issue where custom permalinks resulted in a 404
+* Fixed issue where shortcodes used on the calendar page conflicted
+with Agenda View
+* When importing events from some calendars meta fields contained
+unreadable data
+* Fixed issue where “no end time” could not be unchecked
+* Fixed an issue where the Google map preview was obscuring the
+address fields
+* Fixed an issue where the “Post your Event” and “Add your Feed”
+buttons were not visible on shortcode calendars
+* Event detail pages will now always open in a modal from calendars
+embedded using the SuperWidget
+* Resolved conflict with the Form Maker plugin
+* Fixed an issue where an unauthorized user could access the clone
+event feature
+
+= Version 2.1.9 =
+* Improved calendar feeds import from Google calendar
+* Made calendar behaviour across browsers more consistent – fixed issue
+where some of the elements remained inactive after loading
+* Improved cache handling to allow easier development of child calendar
+themes
+* Improved memory handling – some heavy tasks are delayed or not
+performed
+* Improved legacy theme detection
+* Improved notifications mechanism to make informational notices clearly
+distinguishable
+* Improved SuperWidget navigation by handling more operations without
+resorting to rendering in base calendar context
+* Fixed event limit handling in shortcode – now number of events
+indicated when creating the shortcode is respected
+* Removed unwanted URLs from print view
+* Fixed multi day events display in Month view
+* Fixed word-wrapping rendering in month view – got rid of unwanted
+rendering artefacts
+* Fixed timezone handling on calendar views – unknown timezones are now
+treated as default calendar timezone
+
+= Version 2.1.8 =
+* Fixed issue where core themes were sometimes incorrectly treated as
+legacy ones
+* Fixed issue where some elements in child themes weren't correctly
+rendered
+* Fixed issue where event details link was being malformed in some
+cases
+* Improved compatibility with some 3rd party themes
+
+= Version 2.1.7 =
+* Fixed issue where a stopping error may have been encountered when
+3rd party plugins do not properly use include_once family functions
+* Fixed issue where address autocomplete wasn't properly disabled
+* Fixed issue where clicking "Back to calendar" was redirecting to
+default calendar when a site had more than one calendar embedded via
+shortcode
+* Fixed issue where on some browsers and operating systems extra
+characters were being rendered on screen
+* Fixed issue where some 3rd party plugins were injecting non-readable
+data into the event excerpt view
+* Fixed issue where all-day view was not rendering correctly at all
+times
+* Improved print-view to use compact agenda view
+
+= Version 2.1.6 =
+* If an event's timezone is different from the site's it will now be
+displayed on the event details page
+* Improved calendar view customization by allowing selection of fonts
+* Made CSS cached filename unique on every theme save to improve caching
+compatibility
+* Improved AJAX failure handling
+* Improved button layout on HTML4 sites
+* Improved the UI of the filter bar when empty
+* Improved CSS rendering in widgets, to avoid conflicts
+* Improved performance by re-compiling CSS afer changes require it
+* Made it possible to use area between filter bar and main calendar as a
+widget area with certain themes
+* Prevent potential issues with incompatible add-on versions by checking
+them during activation
+* Showing add-ons available for All-in-One Event Calendar in a
+dedicated page
+* Fixed issue with unescaped HTML in the widget title 
+* Fixed wording - using proper WordPress name wherever applicable 
+* Fixed issue with double-escaped HTML in Agenda view (strange
+characters in titles) 
+* Fixed invalid constant use which was causing some strings to be not
+translatable 
+* Fixed event title rendering in a widget 
+* Fixed span class appearing on all day events in the sidebar widget 
+* Fixed imported all day events appearing a month ahead in Month View 
+* Fixed an issue where base64 fonts caused errors with older versions of
+PHP 
+* Fixed an issue with ics feeds importing past events 
+* Fixed an issue where theme options need to be resaved after update 
+* Fixed an issue where font awesome icons were missing in Firefox 
+* Fixed a conflict with sortcodes and front end rendering 
+* Fixed an issue where an event missing a timezone caused a fatal error 
+* Fixed a styling issue with Select2 fields on the settings page 
+* Fixed an issue where the post your event button did not display on a
+calendar set with shortcode 
+* Fixed an issue where some calendars displayed extra space below
+Posterboard 
+* Fixed an issue where certain feeds would create double images 
+* Fixed a navigation issue with a calendar embedded by shortcode 
+* Fixed issue where Agenda View displaed multiple images 
+* Fixed an issue where clicking a link in js widgets did not open the
+modal 
+* Fixed issue where clearing filters changed spacing 
+* Fixed issue where clearing filters reset the calendar to default view 
+* Fixed issue where in some cases views would not change 
+* Fixed issue where featured images were missing from Streamview in
+Firefox 
+* Fixed issue where the timezone of events imported from Google was set
+to UTC
+
+= Version 2.1.5 =
+* Confirmed compatibility with WordPress 4.0 and added new Timely icon
+
 = Version 2.1.4 =
 * Improved context awareness of cache clean-up function to protect
 from accidentally removing files that do not belong to the plugin
@@ -180,7 +352,7 @@ from accidentally removing files that do not belong to the plugin
 * Added possibility to keep old events during ICS feeds update
 * Made subscribe dropdown button mobile friendly
 * Implemented microformats 2 improving SEO and reducing theme and plugin
-conflicts 
+conflicts
 * Improved compatibility with JetPack - sharing elements no longer
 appear on empty pop-over elements
 * Enabled translation of some previously untranslatable strings
@@ -681,10 +853,8 @@ dates.
 * Fixed getOffset problem - notify me if it still happens for you
 
 = Version 1.3 =
-* Added shortcodes support.[#36](http://trac.the-seed.ca/ticket/36)
-(Howto is under Frequently Asked Questions tab)
-* Added support to exclude events using
-[EXRULE](http://www.kanzaki.com/docs/ical/exrule.html)
+* Added shortcodes support. (Howto is under Frequently Asked Questions tab)
+* Added support to exclude events using [EXRULE](http://www.kanzaki.com/docs/ical/exrule.html)
 * Added Czech translation
 * Added Danish translation
 * Updated Swedish translation
@@ -693,9 +863,7 @@ dates.
 * Reviewed plugin's security. The plugin is as safe to use as is
 WordPress itself.
 * Fixed: instance_id not corresponding with correct data
-[#275](http://trac.the-seed.ca/ticket/275)
 * Fixed: Call-time pass-by-reference warning
-[#268](http://trac.the-seed.ca/ticket/268)
 * Improvement: Added support for custom fields
 
 = Version 1.2.4 =
@@ -704,77 +872,57 @@ with PHP versions below 5.3.0
 
 = Version 1.2.3 =
 * Improvement: Days of the week in month recurrence
-[#170](http://trac.the-seed.ca/ticket/170)
 * Improvement: Make Month view, Week view compatible with touchscreen
-devices [#210](http://trac.the-seed.ca/ticket/210)
+devices
 * Improvement: Improve error handling in get_timezone_offset
-function[#219](http://trac.the-seed.ca/ticket/219)
+function
 * Improvement: Update iCalcreator class
-[#256](http://trac.the-seed.ca/ticket/256)
 * Fixed: Widget Limit options (category, tag, etc) multiselect fails
-to display properly [#192](http://trac.the-seed.ca/ticket/192)
+to display properly
 * Fixed: Private Events Show in Calendar and Upcoming
-Events. [#201](http://trac.the-seed.ca/ticket/201)
+Events.
 * Fixed: Dates getting mixed up between Ai1EC calendars
-[#229](http://trac.the-seed.ca/ticket/229)
 * Fixed: Error displayed when event is a draft
-[#239](http://trac.the-seed.ca/ticket/239)
 * Fixed: PHP Notice errors from widget
-[#255](http://trac.the-seed.ca/ticket/255)
 
 = Version 1.2.2 =
 * Fixed: Issue with Week view having an improper width
-[#208](http://trac.the-seed.ca/ticket/208)
 
 = Version 1.2.1 =
 * Fixed: Exporting single event was exporting the whole calendar
-[#183](http://trac.the-seed.ca/ticket/183)
 * Fixed: Widget date was off by one in certain cases
-[#151](http://trac.the-seed.ca/ticket/151)
 * Fixed: Trashed events were still being displayed
-[#169](http://trac.the-seed.ca/ticket/169)
 * Fixed: All day events were exporting with timezone specific time
-ranges [#30](http://trac.the-seed.ca/ticket/30)
+ranges
 * Fixed: End date was able to be before the start date
-[#172](http://trac.the-seed.ca/ticket/172)
 * Fixed: 404 or bad ICS URLs now provide a warning message rather than
-fail silently [#204](http://trac.the-seed.ca/ticket/204)
+fail silently
 * Fixed: Added cachebuster to google export URL to avoid Google
-Calendar errors [#160](http://trac.the-seed.ca/ticket/160)
+Calendar errors
 * Fixed: Week view was always using AM and PM
-[#190](http://trac.the-seed.ca/ticket/190)
 * Fixed: Repeat_box was too small for some translations
-[#165](http://trac.the-seed.ca/ticket/165)
 
 = Version 1.2 =
 * Added scrollable Week view
-[#117](http://trac.the-seed.ca/ticket/117)
 * Fixed some notice-level errors
 
 = Version 1.1.3 =
 * Fixed: last date issue for recurring events "until" end date
-[#147](http://trac.theseednetwork.com/ticket/147)
 * Fixed an issue with settings page not saving changes.
 * Fixed issues when subscribing to calendars.
 * Export only published events
-[#95](http://trac.theseednetwork.com/ticket/95)
 * Added translation patch. Thank you josjo!
-[#150](http://trac.theseednetwork.com/ticket/150)
 * Add language and region awareness in functions for Google Map. Thank
-you josjo! [#102](http://trac.theseednetwork.com/ticket/102)
+you josjo!
 * Small translation error in class-ai1ec-app-helper.php. Thank you
-josjo! [#94](http://trac.theseednetwork.com/ticket/94)
+josjo!
 * Added Dutch, Spanish, and Swedish translations. For up to date
-language files, visit [ticket
-#78](http://trac.theseednetwork.com/ticket/78).
+language files, visit
 
 = Version 1.1.2 =
 * Fixed: Problem in repeat UI when selecting months before October
-[#136](http://trac.theseednetwork.com/ticket/136)
 * Fixed: Append instance_id only to events permalink
-[#140](http://trac.theseednetwork.com/ticket/140)
 * Fixed: Events ending on date problem
-[#141](http://trac.theseednetwork.com/ticket/141)
 * Feature: Added French translations
 
 = Version 1.1.1 =
@@ -782,58 +930,39 @@ language files, visit [ticket
 
 = Version 1.1 =
 * Feature: New recurrence UI when adding events
-[#40](http://trac.theseednetwork.com/ticket/40)
 * Feature: Translate recurrence rule to Human readable format that
-allows localization [#40](http://trac.theseednetwork.com/ticket/40)
+allows localization
 * Feature: Add Filter by Categories, Tags to Widget
-[#44](http://trac.theseednetwork.com/ticket/44)
 * Feature: Add option to keep all events expanded in the agenda view
-[#33](http://trac.theseednetwork.com/ticket/33)
 * Feature: Make it possible to globalize the date picker. Thank you
-josjo! [#52](http://trac.theseednetwork.com/ticket/52)
+josjo!
 * Fixed: On recurring events show the date time of the current event
 and NOT the original event
-[#39](http://trac.theseednetwork.com/ticket/39)
 * Fixed: Events posted in Standard time from Daylight Savings Time are
-wrong [#42](http://trac.theseednetwork.com/ticket/42)
+wrong
 * Fixed: Multi-day Events listing twice
-[#56](http://trac.theseednetwork.com/ticket/56)
 * Fixed: %e is not supported in gmstrftime on Windows
-[#53](http://trac.theseednetwork.com/ticket/53)
 * Improved: IE9 Support
-[#11](http://trac.theseednetwork.com/ticket/11)
 * Improved: Corrected as many as possible HTML validation errors
-[#9](http://trac.theseednetwork.com/ticket/9)
 * Improved: Optimization changes for better performance.
 
 = Version 1.0.9 =
 * Fixed a problem with timezone dropdown list
 
 = Version 1.0.8 =
-* Added better if not full localization support
-[#25](http://trac.theseednetwork.com/ticket/25)
-[#23](http://trac.theseednetwork.com/ticket/23)
-[#10](http://trac.theseednetwork.com/ticket/10) - thank you josjo
+* Added better if not full localization support - thank you josjo
 * Added qTranslate support and output to post data using WordPress
-filters [#1](http://trac.theseednetwork.com/ticket/1)
+filters
 * Added uninstall support
-[#7](http://trac.theseednetwork.com/ticket/7)
-* Added 24h time in time pickers
-[#26](http://trac.theseednetwork.com/ticket/26) - thank you josjo
+* Added 24h time in time pickers - thank you josjo
 * Fixed an issue when event duration time is decremented in single
-(detailed) view [#2](http://trac.theseednetwork.com/ticket/2)
+(detailed) view
 * Fixed an issue with times for ics imported events
-[#6](http://trac.theseednetwork.com/ticket/6)
 * Better timezone control
-[#27](http://trac.theseednetwork.com/ticket/27)
 * Fixed the category filter in agenda view
-[#12](http://trac.theseednetwork.com/ticket/12)
 * Fixed event date being set to null when using quick edit
-[#16](http://trac.theseednetwork.com/ticket/16)
-* Fixed a bug in time pickers
-[#17](http://trac.theseednetwork.com/ticket/17) - thank you josjo
+* Fixed a bug in time pickers - thank you josjo
 * Deprecated function split() is removed
-[#8](http://trac.theseednetwork.com/ticket/8)
 
 = Version 1.0.7 =
 * Fixed issue with some MySQL version
@@ -897,41 +1026,30 @@ WordPress Dashboard.
 3. Once the plugin is activated, follow the instructions in the notice
 to configure it.
 
-**Important notice:** When upgrading from version `1.0.2` or below you
-  must reactivate the plugin.
-
 = For advanced users: =
 
 To place the calendar in a DOM/HTML element besides the default page
 content container without modifying the theme:
 
-1. Navigate to **Settings** > **Calendar** in the WordPress Dashboard.
+1. Navigate to **Events** > **Settings** > **Advanced** > **Advanced
+Settings** in the WordPress Dashboard.
 2. Enter a CSS or jQuery-style selector of the target element in the
-**Contain calendar in this DOM element** field.
+**Move calendar into this DOM element** field.
 3. Click **Update**.
 
 == Screenshots ==
 
-1. Add new event - part 1
-2. Add new event - with recurrence
-3. Event categories
-4. Event categories with color picker
-5. Front-end: Month view of calendar
-6. Front-end: Month view of calendar with mouse cursor hovering over
-event
-7. Front-end: Month view of calendar with active category filter
-8. Front-end: Month view of calendar with active tag filter
-9. Front-end: Week view of calendar
-10. Front-end: Agenda view of calendar
-11. Settings page
-12. Upcoming Events widget
-13. Upcoming Events widget - configuration options
+1. Posterboard view
+2. Add New Event page
+3. Settings page
+4. Month view
+5. Event details page
 
 == Upgrade Notice ==
 
 = 2.0 =
 I you believe you are missing functionality, please visit our site and
-download the correspoding Add-on. 
+download the correspoding Add-on.
 
 = 1.0.3 =
 When upgrading to from below `1.0.3` you must reactivate the plugin.

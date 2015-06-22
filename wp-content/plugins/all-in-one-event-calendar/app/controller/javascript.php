@@ -58,6 +58,8 @@ class Ai1ec_Javascript_Controller {
 	// settings page
 	const SETTINGS_PAGE = 'admin_settings.js';
 
+	//widget creator page
+	CONST WIDGET_CREATOR = 'widget-creator.js';
 	/**
 	 * @var Ai1ec_Registry_Object
 	 */
@@ -77,6 +79,7 @@ class Ai1ec_Javascript_Controller {
 		self::SETTINGS_PAGE       => true,
 		self::EVENT_PAGE_JS       => true,
 		self::CALENDAR_PAGE_JS    => true,
+		self::WIDGET_CREATOR      => true,
 	);
 
 	/**
@@ -200,7 +203,9 @@ class Ai1ec_Javascript_Controller {
 
 		// Load appropriate jQuery script based on browser.
 		$jquery = $this->get_jquery_version_based_on_browser(
-			$_SERVER['HTTP_USER_AGENT']
+			isset( $_SERVER['HTTP_USER_AGENT'] )
+				? $_SERVER['HTTP_USER_AGENT']
+				: ''
 		);
 
 		// Load the main script for the page.
@@ -233,6 +238,7 @@ class Ai1ec_Javascript_Controller {
 			$page_to_load
 		);
 		$ext_js = '';
+
 		foreach ( $extension_files as $file ) {
 			$ext_js .= file_get_contents( $file );
 		}
@@ -244,7 +250,10 @@ class Ai1ec_Javascript_Controller {
 		);
 
 		$javascript = $require . $require_config . $translation_module .
-			$config . $jquery . $page_js . $common_js . $ext_js . $page_ready;
+			$config . $jquery . $common_js . $ext_js . $page_js . $page_ready;
+		// add to blank spaces to fix issues with js
+		// being truncated onn some installs
+		$javascript .= '  ';
 		$this->_echo_javascript( $javascript );
 	}
 
@@ -296,25 +305,20 @@ class Ai1ec_Javascript_Controller {
 		if ( $this->_are_we_accessing_the_calendar_settings_page() === TRUE ) {
 			$script_to_load = self::SETTINGS_PAGE;
 		}
-
+		if ( true === $this->_are_we_creating_widgets() ) {
+			$script_to_load = self::WIDGET_CREATOR;
+		}
 		if ( false === $script_to_load ) {
 			$script_to_load = apply_filters( 'ai1ec_backend_js', self::LOAD_ONLY_BACKEND_SCRIPTS );
 		}
-		if ( current_user_can( 'manage_options' ) &&
-			$this->_registry->get( 'model.settings' )->get( 'show_tracking_popup' )
-		) {
-			wp_enqueue_style( 'wp-pointer' );
-			wp_enqueue_script( 'jquery-ui' );
-			wp_enqueue_script( 'wp-pointer' );
-			wp_enqueue_script( 'utils' );
-		}
-
 		$this->add_link_to_render_js( $script_to_load, true );
 
 	}
 
 	/**
 	 * Loads version 1.9 or 2.0 of jQuery based on user agent.
+	 * If $user_agent is null (due to lack of HTTP header) we always serve
+	 * jQuery 2.0.
 	 *
 	 * @param string $user_agent
 	 *
@@ -322,7 +326,8 @@ class Ai1ec_Javascript_Controller {
 	 */
 	public function get_jquery_version_based_on_browser( $user_agent ) {
 		$js_path = AI1EC_ADMIN_THEME_JS_PATH . DIRECTORY_SEPARATOR;
-		$jquery = 'jquery_timely20.js';
+		$jquery  = 'jquery_timely20.js';
+
 		preg_match( '/MSIE (.*?);/', $user_agent, $matches );
 		if ( count( $matches ) > 1 ) {
 			//Then we're using IE
@@ -367,7 +372,7 @@ class Ai1ec_Javascript_Controller {
 		if ( $force_ssl_admin && ! is_ssl() ) {
 			force_ssl_admin( false );
 		}
-		$ajax_url        = admin_url( 'admin-ajax.php' );
+		$ajax_url        = ai1ec_admin_url( 'admin-ajax.php' );
 		force_ssl_admin( $force_ssl_admin );
 		$settings        = $this->_registry->get( 'model.settings' );
 		$locale          = $this->_registry->get( 'p28n.wpml' );
@@ -416,6 +421,9 @@ class Ai1ec_Javascript_Controller {
 			'general_url_not_valid'          => Ai1ec_I18n::__(
 				'Please remember that URLs must start with either "http://" or "https://".'
 			),
+			'calendar_loading'               => Ai1ec_I18n::__(
+				'Loading&hellip;'
+			),
 			'language'                       => $this->_registry->get( 'p28n.wpml' )->get_lang(),
 			'ajax_url'                       => $ajax_url,
 			// 24h time format for time pickers
@@ -431,14 +439,32 @@ class Ai1ec_Javascript_Controller {
 			'week_view_starts_at'            => $settings->get( 'week_view_starts_at' ),
 			'week_view_ends_at'              => $settings->get( 'week_view_ends_at' ),
 			'blog_timezone'                  => $blog_timezone,
-			'show_tracking_popup'            =>
-				current_user_can( 'manage_options' ) && $settings->get( 'show_tracking_popup' ),
 			'affix_filter_menu'              => $settings->get( 'affix_filter_menu' ),
 			'affix_vertical_offset_md'       => $settings->get( 'affix_vertical_offset_md' ),
 			'affix_vertical_offset_lg'       => $settings->get( 'affix_vertical_offset_lg' ),
 			'affix_vertical_offset_sm'       => $settings->get( 'affix_vertical_offset_sm' ),
 			'affix_vertical_offset_xs'       => $settings->get( 'affix_vertical_offset_xs' ),
+			'calendar_page_id'               => $settings->get( 'calendar_page_id' ),
 			'region'                         => ( $settings->get( 'geo_region_biasing' ) ) ? $locale->get_region() : '',
+			'site_url'                       => trailingslashit(
+				ai1ec_get_site_url()
+			),
+			'javascript_widgets'             => array(),
+			'widget_creator'                 => array(
+				'preview'         => Ai1ec_I18n::__( 'Preview:' ),
+				'preview_loading' => Ai1ec_I18n::__(
+					'Loading preview&nbsp;<i class="ai1ec-fa ai1ec-fa-spin ai1ec-fa-spinner"></i>'
+				)
+			),
+			'load_views_error'                 => Ai1ec_I18n::__(
+				'Something went wrong while fetching events.<br>The request status is: %STATUS% <br>The error thrown was: %ERROR%'
+			),
+			'cookie_path'                    => $this->_registry->get(
+				'cookie.utility'
+			)->get_path_for_cookie(),
+			'disable_autocompletion'         => $settings->get( 'disable_autocompletion' ),
+			'end_must_be_after_start'        => __( 'The end date can\'t be earlier than the start date.', AI1EC_PLUGIN_NAME ),
+			'show_at_least_six_hours'        => __( 'For week and day view, you must select an interval of at least 6 hours.', AI1EC_PLUGIN_NAME ),
 		);
 		return apply_filters( 'ai1ec_js_translations', $data );
 	}
@@ -494,10 +520,12 @@ class Ai1ec_Javascript_Controller {
 		);
 		$conditional_get->sendHeaders();
 		if ( ! $conditional_get->cacheIsValid ) {
-			$http_encoder = new HTTP_Encoder( array(
-				'content' => $javascript,
-				'type' => 'text/javascript'
-			)
+			$http_encoder = $this->_registry->get(
+				'http.encoder',
+				array(
+					'content' => $javascript,
+					'type' => 'text/javascript'
+				)
 			);
 			$compression_level = null;
 			if ( $this->_registry->get( 'model.settings' )->get( 'disable_gzip_compression' ) ) {
@@ -564,6 +592,7 @@ JSC;
 		if( true === is_page( $this->_settings->get( 'calendar_page_id' ) ) ) {
 			$is_calendar_page = self::TRUE_PARAM;
 		}
+
 		$url = add_query_arg(
 			array(
 				// Add the page to load
@@ -573,7 +602,7 @@ JSC;
 				// If we are on the calendar page we must load the correct option
 				self::IS_CALENDAR_PAGE     => $is_calendar_page,
 			),
-			trailingslashit( $this->_template_link_helper->get_site_url() )
+			trailingslashit( ai1ec_get_site_url() )
 		);
 		if ( true === $backend ) {
 			$this->_scripts_helper->enqueue_script(
@@ -631,12 +660,18 @@ JSC;
 	 * @return boolean TRUE if we are accessing the settings page FALSE otherwise
 	 */
 	private function _are_we_accessing_the_calendar_settings_page() {
-		$path_details = pathinfo( $_SERVER["SCRIPT_NAME"] );
+		$path_details = pathinfo( $_SERVER['SCRIPT_NAME'] );
 		$page = isset( $_GET['page'] ) ? $_GET['page'] : '';
 		return $path_details['basename'] === 'edit.php' &&
 				$page === AI1EC_PLUGIN_NAME . '-settings';
 	}
 
+	protected function _are_we_creating_widgets() {
+		$path_details = pathinfo( $_SERVER['SCRIPT_NAME'] );
+		$page = isset( $_GET['page'] ) ? $_GET['page'] : '';
+		return $path_details['basename'] === 'edit.php' &&
+			$page === AI1EC_PLUGIN_NAME . '-widget-creator';
+	}
 	/**
 	 * Check if we are editing less variables
 	 *

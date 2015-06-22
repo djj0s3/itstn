@@ -30,9 +30,11 @@ class Ai1ec_Twig_Ai1ec_Extension extends Twig_Extension {
 	 */
 	public function getFunctions() {
 		return array(
-			'screen_icon'    => new Twig_Function_Method( $this, 'screen_icon' ),
-			'wp_nonce_field' => new Twig_Function_Method( $this, 'wp_nonce_field' ),
-			'do_meta_boxes'  => new Twig_Function_Method( $this, 'do_meta_boxes' ),
+			'screen_icon'                  => new Twig_Function_Method( $this, 'screen_icon' ),
+			'wp_nonce_field'               => new Twig_Function_Method( $this, 'wp_nonce_field' ),
+			'do_meta_boxes'                => new Twig_Function_Method( $this, 'do_meta_boxes' ),
+			'fb'                           => new Twig_Function_Method( $this, 'fb' ),
+			'ai1ec_disable_content_output' => new Twig_Function_Method( $this, 'ai1ec_disable_content_output' )
 		);
 	}
 
@@ -100,6 +102,16 @@ class Ai1ec_Twig_Ai1ec_Extension extends Twig_Extension {
 			);
 	}
 
+	/**
+	 * Debug function to be used in twig templates with Firebug/FirePHP
+	 * 
+	 * @param mixed $object
+	 */
+	public function fb( $object ) {
+		if ( function_exists( 'fb' ) ) {
+			fb( $object );
+		}
+	}
 	/**
 	 * Get URL for avatar.
 	 *
@@ -345,4 +357,12 @@ class Ai1ec_Twig_Ai1ec_Extension extends Twig_Extension {
 		return 'ai1ec';
 	}
 
+	/**
+	 * Hooks into the_content filter to disable its output.
+	 *
+	 * @return void Method does not return.
+	 */
+	public function ai1ec_disable_content_output() {
+		$this->_registry->get( 'calendar.state' )->set_append_content( false );
+	}
 }
