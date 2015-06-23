@@ -6166,6 +6166,13 @@ a.cmsms_content_next_slide span {background:url(images/content_slider_next.png) 
 
 	.tagline-wrapper {max-width: 100%;}
 
+	select#resp_navigation {display:block;}
+
+	#navigation {display:none;}
+
+	.logged-in #header nav {
+	  top: 30px;
+	}
 	#content, 
 
 	#sidebar {width:100%}
@@ -6446,11 +6453,11 @@ a.cmsms_content_next_slide span {background:url(images/content_slider_next.png) 
 
 	
 
-	#navigation {display:none;}
+	
 
 	
 
-	select#resp_navigation {display:block;}
+	
 
 	
 
