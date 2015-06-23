@@ -5849,7 +5849,9 @@ a.cmsms_content_next_slide span {background:url(images/content_slider_next.png) 
 
 	}
 
-	
+	section#top {
+		margin-top: 60px;
+	}
 
 	#middle_content {width:auto;}
 
@@ -6077,6 +6079,10 @@ a.cmsms_content_next_slide span {background:url(images/content_slider_next.png) 
 
 
 @media only screen and (max-width: 767px) {
+
+	#header_login {
+		display: none;
+	}
 
 	
 
