@@ -869,8 +869,12 @@ select#resp_navigation option.main_item {font-weight:bold;}
 
 	position:relative;
 
+	margin-top: 60px;
 }
 
+.logged-in #top {
+	  margin-top: 40px;
+}
 
 
 #slider {
