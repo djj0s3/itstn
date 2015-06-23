@@ -251,8 +251,16 @@ $seotools_keywords = get_post_meta(get_the_ID(), 'seotools_keywords', true);
 						'</a>';
 					}
 				}
-				echo '<div><h3 class="tag-line">Intelligent Transportation Society of Tennessee</h3><div>';
+				?> 
+				<div class=""><h4 class="tag-line tagline-wrapper">Intelligent Transportation Society of Tennessee</h4></div>
+				<div id="header_login">
+				<?php 
+					if (function_exists('wpmem_inc_sidebar')) { 
+						wpmem_inc_sidebar();
+					}
 				?>
+				</div>
+				
 
 <!-- _________________________ Start Navigation _________________________ -->
 					<nav>

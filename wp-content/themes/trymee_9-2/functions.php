@@ -111,10 +111,12 @@ require_once(CMSMASTERS_FUNCTIONS . '/shortcodes.php');
 // Load Custom Comments Template
 require_once(CMSMASTERS_FUNCTIONS . '/comments.php');
 
-
 // Create Database Tables Backggounds, Fonts, Icons, Forms, Sliders, Likes & Redirect to Theme Options Page on Theme Activation
 if (isset($_GET['activated'])) {
 	require_once(CMSMASTERS_FUNCTIONS . '/database-import.php');
 }
+
+// Load Custom functions
+require_once(TEMPLATEPATH.'/custom-functions.php');
 
 ?>
