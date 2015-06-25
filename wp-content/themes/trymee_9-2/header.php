@@ -214,6 +214,7 @@ $seotools_keywords = get_post_meta(get_the_ID(), 'seotools_keywords', true);
 				<a href="#" id="slide_top"></a>
 
 <!-- _________________________ Start Header _________________________ -->
+			<div class="header-wrapper">
 				<header id="header"<?php if (!$checker['iphone'] && !$checker['blackberry'] && !$checker['android'] && !$checker['mac']) { echo ' class="csstransition"'; } ?>>
 				<?php 
 				if ($site_name) {
@@ -261,7 +262,8 @@ $seotools_keywords = get_post_meta(get_the_ID(), 'seotools_keywords', true);
 				?>
 				</div>
 				
-
+				</div>
+				<div class="slogan"><h5>Advancing Transportation Technology in Tennessee</h5></div>
 <!-- _________________________ Start Navigation _________________________ -->
 					<nav>
 					<?php

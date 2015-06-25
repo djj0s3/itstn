@@ -564,6 +564,12 @@ h6 a {text-decoration:none;}
 	width: 100%;
 }
 
+.slogan {
+	float: left;
+	position: relative;
+	left: 30px;
+	top: -50px;
+}
 
 /* ---------- Navigation ---------- */
 
@@ -5896,6 +5902,10 @@ a.cmsms_content_next_slide span {background:url(images/content_slider_next.png) 
 
 	.tag-line{ left: 30%; font-size: 25px; line-height: 1.2;}	
 
+	.slogan {		
+		left: 7%;
+	}
+
 	.commentlist ul {padding-left:30px;}
 
 	
@@ -6162,9 +6172,18 @@ a.cmsms_content_next_slide span {background:url(images/content_slider_next.png) 
 
 	}
 
-	.tag-line{ font-size: 14px; left: 10%; bottom: 30px; top: auto; }
+	.tag-line{ font-size: 14px; left: 0; bottom: 0px; top: auto; width: 300px; margin: 0 auto; position: relative;}
 
 	.tagline-wrapper {max-width: 100%;}
+
+	.slogan {		
+		left: 0;
+		top: 5px;
+		float:none;
+		max-width: 370px;
+		margin: 0 auto;	
+		width: 90%;	  
+	}
 
 	select#resp_navigation {display:block;}
 
