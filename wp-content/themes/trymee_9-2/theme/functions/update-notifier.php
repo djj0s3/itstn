@@ -19,9 +19,9 @@ function on_admin_init() {
     
     $upgrader->check_for_theme_update(); 
     
-    // $upgrader->upgrade_theme();
+    $upgrader->upgrade_theme();
 }
 
-add_action('admin_init', 'on_admin_init');
+//add_action('admin_init', 'on_admin_init');
 
 ?>

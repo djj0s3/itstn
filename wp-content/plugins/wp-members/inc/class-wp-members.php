@@ -6,19 +6,13 @@
  */
 class WP_Members {
 
-	function __construct() {
-
-		$this->load_settings();
-
-	}
-	
 	/**
 	 * Plugin initialization function.
 	 *
 	 * @since 3.0.0
 	 */
-	function load_settings() {
-		
+	function __construct() {
+	
 		/**
 		 * Filter the options before they are loaded into constants.
 		 *
@@ -28,13 +22,20 @@ class WP_Members {
 		 */
 		$settings = apply_filters( 'wpmem_settings', get_option( 'wpmembers_settings' ) );
 
+		// Validate that v3 settings are loaded.
+		if ( ! isset( $settings['version'] ) ) {
+			// If settings were not properly built during plugin upgrade.
+			require_once( WPMEM_PATH . 'wp-members-install.php' );
+			$settings = apply_filters( 'wpmem_settings', wpmem_update_settings() );
+		}
+		
 		// Assemble settings.
 		foreach ( $settings as $key => $val ) {
 			$this->$key = $val;
 		}
 
 		// Set the stylesheet.
-		$this->cssurl = ( $this->style == 'use_custom' ) ? $this->cssurl : $this->style;
+		$this->cssurl = ( isset( $this->style ) && $this->style == 'use_custom' ) ? $this->cssurl : $this->style;
 	}
 
 	/**
@@ -253,7 +254,7 @@ class WP_Members {
 		$defaults = array(
 			'post_id'    => $post->ID,
 			'post_type'  => $post->post_type,
-			'block'      => ( $this->block[ $post->post_type ] == 1 ) ? true : false,
+			'block'      => ( isset( $this->block[ $post->post_type ] ) && $this->block[ $post->post_type ] == 1 ) ? true : false,
 			'block_meta' => $meta, // @todo get_post_meta( $post->ID, '_wpmem_block', true ),
 			'block_type' => ( $post->post_type == 'post' ) ? $this->block['post'] : ( ( $post->post_type == 'page' ) ? $this->block['page'] : 0 ),
 		);

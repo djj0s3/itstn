@@ -143,11 +143,12 @@ function wpmem_do_install() {
 		update_option( 'wpmembers_style', plugin_dir_url ( __FILE__ ) . 'css/generic-no-float.css', '', 'yes' );
 
 	} else {
-
+		
+		wpmem_update_settings();
 		wpmem_update_captcha();
 		wpmem_update_dialogs();
 		wpmem_append_email();
-		wpmem_update_settings();
+		
 	}
 }
 
@@ -156,6 +157,8 @@ function wpmem_do_install() {
  * Updates the existing settings if doing an update.
  *
  * @since 3.0
+ *
+ * @return array $wpmem_newsettings
  */
 function wpmem_update_settings() {
 
@@ -219,6 +222,8 @@ function wpmem_update_settings() {
 		delete_option( 'wpmembers_autoex' );
 		delete_option( 'wpmembers_attrib' );
 		*/
+		
+		return $wpmem_newsettings;
 	}
 }
 
