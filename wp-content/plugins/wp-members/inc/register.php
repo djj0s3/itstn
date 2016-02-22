@@ -6,13 +6,13 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2015 Chad Butler
+ * Copyright (c) 2006-2016 Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
- * @package WordPress
- * @subpackage WP-Members
+ * @package WP-Members
+ * @subpackage WP-Members Registration Functions
  * @author Chad Butler
- * @copyright 2006-2015
+ * @copyright 2006-2016
  *
  * Functions Included:
  * - wpmem_registration
@@ -192,6 +192,32 @@ function wpmem_registration( $toggle ) {
 					return "empty"; exit();
 				}
 			}
+		} elseif ( $wpmem->captcha == 3 && $wpmem_captcha['recaptcha'] ) {
+			// Get the captcha response.
+			if ( isset( $_POST['g-recaptcha-response'] ) ) {
+				$captcha = $_POST['g-recaptcha-response'];
+			}
+			
+			// If there is no captcha value, return error.
+			if ( ! $captcha ) {
+				$wpmem_themsg = __( 'You must complete the CAPTCHA form.', 'wp-members' );
+				return "empty"; exit();
+			}
+			
+			// We need the private key for validation.
+			$privatekey = $wpmem_captcha['recaptcha']['private'];
+			
+			// Validate the captcha.
+			$response = file_get_contents( "https://www.google.com/recaptcha/api/siteverify?secret=" . $privatekey . "&response=" . $captcha . "&remoteip=" . $_SERVER['REMOTE_ADDR'] );
+			
+			// Decode the json response.
+			$response = json_decode( $response, true );
+			
+			// If captcha validation was unsuccessful.
+			if ( $response['success'] == false ) {
+				$wpmem_themsg = __( 'CAPTCHA was not valid.', 'wp-members' );
+				return "empty"; exit();
+			}
 		}
 
 		// Check for user defined password.
@@ -201,7 +227,7 @@ function wpmem_registration( $toggle ) {
 		$fields['user_registered'] = gmdate( 'Y-m-d H:i:s' );
 		$fields['user_role']       = get_option( 'default_role' );
 		$fields['wpmem_reg_ip']    = $_SERVER['REMOTE_ADDR'];
-		$fields['wpmem_reg_url']   = $_REQUEST['redirect_to'];
+		$fields['wpmem_reg_url']   = ( isset( $_REQUEST['wpmem_reg_page'] ) ) ? $_REQUEST['wpmem_reg_page'] : $_REQUEST['redirect_to'];
 
 		/*
 		 * These native fields are not installed by default, but if they
@@ -307,7 +333,7 @@ function wpmem_registration( $toggle ) {
 
 		// Notify admin of new reg, if needed.
 		if ( $wpmem->notify == 1 ) { 
-			wpmem_notify_admin( $fields['ID'], $wpmem_fields );
+			wpmem_notify_admin( $fields['ID'], $wpmem_fields, $fields );
 		}
 
 		/**
@@ -353,14 +379,7 @@ function wpmem_registration( $toggle ) {
 		// Add the user_ID to the fields array.
 		$fields['ID'] = $user_ID;
 		
-		/**
-		 * Filter registration data after validation before data insertion.
-		 *
-		 * @since 2.8.2
-		 *
-		 * @param array  $fields An array of the registration field data.
-		 * @param string $toggle A switch to indicate the action (new|edit).
-		 */
+		/** This filter is documented in register.php */
 		$fields = apply_filters( 'wpmem_register_data', $fields, 'edit' ); 
 		
 		/**
@@ -495,4 +514,4 @@ function wpmem_get_captcha_err( $wpmem_captcha_err ) {
 }
 endif;
 
-/** End of File **/
+// End of file.

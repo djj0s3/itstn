@@ -18,13 +18,19 @@ class Ai1ec_Ics_Import_Export_Engine
 	 */
 	protected $_taxonomy_model = null;
 
+	/**
+	 * Recurrence rule class. Contains filter method.
+	 *
+	 * @var Ai1ec_Recurrence_Rule
+	 */
+	protected $_rule_filter = null;
+
 	/* (non-PHPdoc)
 	 * @see Ai1ec_Import_Export_Engine::import()
 	 */
 	public function import( array $arguments ) {
 		$cal = $this->_registry->get( 'vcalendar' );
 		if ( $cal->parse( $arguments['source'] ) ) {
-			$count = 0;
 			try {
 				$result = $this->add_vcalendar_events_to_db(
 					$cal,
@@ -140,25 +146,24 @@ class Ai1ec_Ics_Import_Export_Engine
 		// Maybe use $v->selectComponents(), which takes into account recurrence
 
 		// Fetch default timezone in case individual properties don't define it
-		$tz = $v->getComponent( 'vtimezone' );
+		$tz             = $v->getComponent( 'vtimezone' );
+		$local_timezone = $this->_registry->get( 'date.timezone' )->get_default_timezone();
+		$timezone       = $local_timezone;
 		if ( ! empty( $tz ) ) {
 			$timezone = $tz->getProperty( 'TZID' );
 		}
 
+		$feed_name     = $v->getProperty( 'X-WR-CALNAME' );
 		$x_wr_timezone = $v->getProperty( 'X-WR-TIMEZONE' );
 		if (
 			isset( $x_wr_timezone[1] ) &&
 			is_array( $x_wr_timezone )
 		) {
 			$forced_timezone = (string)$x_wr_timezone[1];
-			$timezone        = empty( $timezone )
-				? (string)$x_wr_timezone[1]
-				: $timezone;
+			$timezone        = $forced_timezone;
 		}
 
 		$messages        = array();
-		$local_timezone  = $this->_registry->get( 'date.timezone' )
-			->get_default_timezone();
 		if ( empty( $forced_timezone ) ) {
 			$forced_timezone = $local_timezone;
 		}
@@ -167,6 +172,7 @@ class Ai1ec_Ics_Import_Export_Engine
 		$exclusions        = array();
 		// go over each event
 		while ( $e = $v->getComponent( 'vevent' ) ) {
+
 			// Event data array.
 			$data = array();
 			// =====================
@@ -206,7 +212,6 @@ class Ai1ec_Ics_Import_Export_Engine
 					}
 				}
 			}
-
 			$categories = $e->getProperty( "CATEGORIES", false, true );
 			$imported_cat = array( Ai1ec_Event_Taxonomy::CATEGORIES => array() );
 			// If the user chose to preserve taxonomies during import, add categories.
@@ -228,7 +233,6 @@ class Ai1ec_Ics_Import_Export_Engine
 				);
 			}
 			$tags = $e->getProperty( "X-TAGS", false, true );
-
 			$imported_tags = array( Ai1ec_Event_Taxonomy::TAGS => array() );
 			// If the user chose to preserve taxonomies during import, add tags.
 			if( $tags && $feed->keep_tags_categories ) {
@@ -270,7 +274,6 @@ class Ai1ec_Ics_Import_Export_Engine
 				$event_timezone,
 				$feed->import_timezone ? $forced_timezone : null
 			);
-
 			if ( false === $start || false === $end ) {
 				throw new Ai1ec_Parse_Exception(
 					'Failed to parse one or more dates given timezone "' .
@@ -303,8 +306,21 @@ class Ai1ec_Ics_Import_Export_Engine
 			}
 
 			if ( $rdate = $e->createRdate() ) {
-				$rdate = explode( ':', $rdate );
-				$rdate = trim( end( $rdate ) );
+				$arr     = explode( 'RDATE', $rdate );
+				$matches = null;
+				foreach ( $arr as $value ) {
+					$arr2 = explode( ':', $value );
+					if ( 2 === count( $arr2 ) ) {
+						$matches[] = $arr2[1];
+					}
+				}
+				if ( null !== $matches ) {
+					$rdate = implode( ',', $matches );	
+					unset( $matches ); 
+					unset( $arr ); 
+				} else {
+					$rdate = null;
+				}				
 			}
 
 			// ===================
@@ -330,24 +346,27 @@ class Ai1ec_Ics_Import_Export_Engine
 							$excpt_date = trim( $particle );
 						}
 					}
-					// Google sends YYYYMMDD for all-day excluded events
-					if (
-						$allday &&
-						8 === strlen( $excpt_date )
-					) {
-						$excpt_date    .= 'T000000Z';
-						$excpt_timezone = 'UTC';
-					}
-					$ex_dt = $this->_registry->get(
-						'date.time',
-						$excpt_date,
-						$excpt_timezone
-					);
-					if ( $ex_dt ) {
-						if ( isset( $exdate{0} ) ) {
-							$exdate .= ',';
+					$exploded       = explode( ',', $excpt_date );
+					foreach ( $exploded as $particle ) {
+						// Google sends YYYYMMDD for all-day excluded events
+						if (
+							$allday &&
+							8 === strlen( $particle )
+						) {
+							$particle    .= 'T000000Z';
+							$excpt_timezone = 'UTC';
 						}
-						$exdate .= $ex_dt->format( 'Ymd\THis', $excpt_timezone );
+						$ex_dt = $this->_registry->get(
+							'date.time',
+							$particle,
+							$excpt_timezone
+						);
+						if ( $ex_dt ) {
+							if ( isset( $exdate{0} ) ) {
+								$exdate .= ',';
+							}
+							$exdate .= $ex_dt->format( 'Ymd\THis', $excpt_timezone );
+						}
 					}
 				}
 			}
@@ -387,7 +406,6 @@ class Ai1ec_Ics_Import_Export_Engine
 				// is not present on the edit event page
 				$data['show_coordinates'] = 1;
 			}
-
 			// ===================
 			// = Venue & address =
 			// ===================
@@ -424,7 +442,7 @@ class Ai1ec_Ics_Import_Export_Engine
 			) {
 				$event_do_show_map = 0;
 			}
-
+				
 			// ==================
 			// = Cost & tickets =
 			// ==================
@@ -445,6 +463,7 @@ class Ai1ec_Ics_Import_Export_Engine
 			}
 			$contact = $e->getProperty( 'contact' );
 			$elements = explode( ';', $contact, 4 );
+
 			foreach ( $elements as $el ) {
 				$el = trim( $el );
 				// Detect e-mail address.
@@ -453,9 +472,7 @@ class Ai1ec_Ics_Import_Export_Engine
 				}
 				// Detect URL.
 				elseif ( false !== strpos( $el, '://' ) ) {
-					$data['contact_url']   = $this->_parse_legacy_loggable_url(
-						$el
-					);
+					$data['contact_url']   = $el;
 				}
 				// Detect phone number.
 				elseif ( preg_match( '/\d/', $el ) ) {
@@ -470,6 +487,16 @@ class Ai1ec_Ics_Import_Export_Engine
 				// If no contact name, default to organizer property.
 				$data['contact_name']    = $organizer;
 			}
+
+			$description = stripslashes(
+							str_replace(
+								'\n',
+								"\n",
+								$e->getProperty( 'description' )
+							));
+			
+			$description = $this->_remove_ticket_url( $description );				
+
 			// Store yet-unsaved values to the $data array.
 			$data += array(
 				'recurrence_rules'  => $rrule,
@@ -479,9 +506,7 @@ class Ai1ec_Ics_Import_Export_Engine
 				'venue'             => $venue,
 				'address'           => $address,
 				'cost'              => $cost,
-				'ticket_url'        => $this->_parse_legacy_loggable_url(
-					$ticket_url
-				),
+				'ticket_url'        => $ticket_url,
 				'show_map'          => $event_do_show_map,
 				'ical_feed_url'     => $feed->feed_url,
 				'ical_source_url'   => $e->getProperty( 'url' ),
@@ -493,18 +518,12 @@ class Ai1ec_Ics_Import_Export_Engine
 				'feed'              => $feed,
 				'post'              => array(
 					'post_status'       => 'publish',
-						'comment_status'    => $comment_status,
-						'post_type'         => AI1EC_POST_TYPE,
-						'post_author'       => 1,
-						'post_title'        => $e->getProperty( 'summary' ),
-						'post_content'      => stripslashes(
-							str_replace(
-								'\n',
-								"\n",
-								$e->getProperty( 'description' )
-							)
-						),
-				),
+					'comment_status'    => $comment_status,
+					'post_type'         => AI1EC_POST_TYPE,
+					'post_author'       => 1,
+					'post_title'        => $e->getProperty( 'summary' ),
+					'post_content'      => $description
+				)
 			);
 			// register any custom exclusions for given event
 			$exclusions = $this->_add_recurring_events_exclusions(
@@ -521,7 +540,7 @@ class Ai1ec_Ics_Import_Export_Engine
 				$feed
 			);
 
-			$event = $this->_registry->get( 'model.event', $data );
+			$event = $this->_registry->get( 'model.event', $data );		
 
 			// Instant Event
 			$is_instant = $e->getProperty( 'X-INSTANT-EVENT' );
@@ -548,12 +567,13 @@ class Ai1ec_Ics_Import_Export_Engine
 					);
 			}
 			if ( null === $matching_event_id ) {
+				
 				// =================================================
 				// = Event was not found, so store it and the post =
 				// =================================================
-					$event->save();
-					$count++;
-			} else {
+				$event->save();
+				$count++;
+			} else {				
 				// ======================================================
 				// = Event was found, let's store the new event details =
 				// ======================================================
@@ -586,41 +606,37 @@ class Ai1ec_Ics_Import_Export_Engine
 				wp_set_post_terms( $event->get( 'post_id' ), array_keys( $ids ), $tax_name );
 			}
 
+			// import the metadata used by ticket events
+
+			$cost_type    = $e->getProperty( 'X-COST-TYPE' );
+			if ( $cost_type && false === ai1ec_is_blank( $cost_type[1] ) ) {
+				update_post_meta( $event->get( 'post_id' ), '_ai1ec_cost_type', $cost_type[1] );
+			}
+
+			$api_event_id = $e->getProperty( 'X-API-EVENT-ID' );
+			if ( $api_event_id && false === ai1ec_is_blank( $api_event_id[1] ) ) {
+				update_post_meta( $event->get( 'post_id' ), Ai1ec_Api::EVENT_ID_METADATA, $api_event_id[1] );	
+			}
+
+			$api_url = $e->getProperty( 'X-API-URL' );
+			if ( $api_url && false === ai1ec_is_blank( $api_url[1] ) ) {
+				update_post_meta( $event->get( 'post_id' ), Ai1ec_Api::ICS_API_URL_METADATA, $api_url[1] );	
+			}
+
+			$checkout_url = $e->getProperty( 'X-CHECKOUT-URL' );
+			if ( $checkout_url && false === ai1ec_is_blank( $checkout_url[1] ) ) {
+				update_post_meta( $event->get( 'post_id' ), Ai1ec_Api::ICS_CHECKOUT_URL_METADATA, $checkout_url[1] );	
+			}
+
 			unset( $events_in_db[$event->get( 'post_id' )] );
-		}
+		} //close while iteration
 
 		return array(
 			'count'            => $count,
 			'events_to_delete' => $events_in_db,
 			'messages'         => $messages,
+			'name'             => $feed_name,
 		);
-	}
-
-	/**
-	 * Convert loggable URL exported from legacy Ai1EC installation.
-	 *
-	 * @param string $loggable_url Likely loggable URL.
-	 *
-	 * @return string Non-loggable URL.
-	 */
-	protected function _parse_legacy_loggable_url( $loggable_url ) {
-		if ( 0 !== strpos( $loggable_url, AI1EC_REDIRECTION_SERVICE ) ) {
-			return $loggable_url; // it wasn't loggable URL
-		}
-		$value = base64_decode(
-			substr( $loggable_url, strlen( AI1EC_REDIRECTION_SERVICE ) )
-		);
-		$clear_url = null; // return empty if nothing is parseable
-		if ( // valid JSON structure remains
-			null !== ( $decoded = json_decode( $value, true ) ) &&
-			isset( $decoded['l'] )
-		) {
-			$clear_url = $decoded['l'];
-		} else if ( preg_match( '|"l"\s*:\s*"(.+?)","|', $value, $matches ) ) {
-			// reverting to dirty parsing as JSON is broken
-			$clear_url = stripslashes( $matches[1] );
-		} // no more else - impossible to parse anything
-		return $clear_url;
 	}
 
 	/**
@@ -763,6 +779,74 @@ class Ai1ec_Ics_Import_Export_Engine
 				$event->get( 'post' )->post_content
 			)
 		);
+
+		$post_meta_values = get_post_meta( $event->get( 'post_id' ), '', false );
+
+		//getting the metadata used by Ticket Event
+		$api_event_id = null;
+		$cost_type    = null;
+		$api_url      = null;
+		$checkout_url = null;
+		if ( $post_meta_values ) {
+			foreach ($post_meta_values as $key => $value) {				
+				if ( '_ai1ec_cost_type' === $key ) {
+					$cost_type    = $value[0];
+				} else if ( Ai1ec_Api::EVENT_ID_METADATA === $key ) {
+					$api_event_id = $value[0];					
+				} else if ( Ai1ec_Api::ICS_API_URL_METADATA === $key ) {
+					$api_url = $value[0];
+				} else if ( Ai1ec_Api::ICS_CHECKOUT_URL_METADATA === $key ) {
+					$checkout_url = $value[0];
+				}
+ 			}			
+		}
+
+		if ( false === ai1ec_is_blank( $cost_type ) ) {
+			$e->setProperty(
+				'X-COST-TYPE',
+				$this->_sanitize_value( $cost_type )
+			);
+		}
+		
+		$url = '';
+		if ( $api_event_id ) {
+
+			//getting all necessary informations that will be necessary on imported ticket events
+			
+			$e->setProperty(
+				'X-API-EVENT-ID',
+				$this->_sanitize_value( $api_event_id )
+			);
+
+			if ( ai1ec_is_blank( $api_url ) ) {
+				$e->setProperty( 'X-API-URL', AI1EC_API_URL );			
+			} else {
+				$e->setProperty( 'X-API-URL', $this->_sanitize_value( $api_url ) );			
+			}
+
+			$api = $this->_registry->get( 'model.api' );
+			if ( ai1ec_is_blank( $checkout_url ) ) {
+				$e->setProperty( 'X-CHECKOUT-URL', AI1EC_TICKETS_CHECKOUT_URL );			
+				$url = $api->create_checkout_url( $api_event_id );
+			} else {
+				$e->setProperty( 'X-CHECKOUT-URL', $this->_sanitize_value( $checkout_url ) );			
+				$url = $api->create_checkout_url( $api_event_id, $checkout_url );
+			}			
+
+		} else if ( $event->get( 'ticket_url' ) ) {					
+			$url = $event->get( 'ticket_url' );
+		}
+
+		//Adding Ticket URL to the Description field
+		if ( false === ai1ec_is_blank( $url ) ) {
+			$content = $this->_remove_ticket_url( $content );	
+			$content = $content
+		             . '<p>' . __( 'Tickets: ', AI1EC_PLUGIN_NAME )
+		             . '<a class="ai1ec-ticket-url-exported" href="'
+		             . $url . '">' . $url
+		             . '</a>.</p>'; 
+		}
+
 		$content = str_replace(']]>', ']]&gt;', $content);
 		$content = html_entity_decode( $content, ENT_QUOTES, 'UTF-8' );
 
@@ -946,7 +1030,7 @@ class Ai1ec_Ics_Import_Export_Engine
 			$e->setProperty(
 				'X-TICKETS-URL',
 				$this->_sanitize_value(
-					$event->get_nonloggable_url( $event->get( 'ticket_url' ) )
+					$event->get( 'ticket_url' )
 				)
 			);
 		}
@@ -967,7 +1051,7 @@ class Ai1ec_Ics_Import_Export_Engine
 			$event->get( 'contact_name' ),
 			$event->get( 'contact_phone' ),
 			$event->get( 'contact_email' ),
-			$event->get_nonloggable_url( $event->get( 'contact_url' ) ),
+			$event->get( 'contact_url' ),
 		);
 		$contact = array_filter( $contact );
 		$contact = implode( '; ', $contact );
@@ -978,9 +1062,10 @@ class Ai1ec_Ics_Import_Export_Engine
 		// ====================
 		$rrule = array();
 		$recurrence = $event->get( 'recurrence_rules' );
+		$recurrence = $this->_filter_rule( $recurrence );
 		if ( ! empty( $recurrence ) ) {
 			$rules = array();
-			foreach ( explode( ';', $event->get( 'recurrence_rules' ) ) as $v) {
+			foreach ( explode( ';', $recurrence ) as $v) {
 				if ( strpos( $v, '=' ) === false ) {
 					continue;
 				}
@@ -1021,6 +1106,7 @@ class Ai1ec_Ics_Import_Export_Engine
 		// = Exception rules =
 		// ===================
 		$exceptions = $event->get( 'exception_rules' );
+		$exceptions = $this->_filter_rule( $exceptions );
 		$exrule = array();
 		if ( ! empty( $exceptions ) ) {
 			$rules = array();
@@ -1078,6 +1164,7 @@ class Ai1ec_Ics_Import_Export_Engine
 		// For other other events which use DATETIME, we must use that as well
 		// We must also match the exact starting time
 		$recurrence_dates = $event->get( 'recurrence_dates' );
+		$recurrence_dates = $this->_filter_rule( $recurrence_dates );
 		if ( ! empty( $recurrence_dates ) ) {
 			$params    = array(
 				'VALUE' => 'DATE-TIME',
@@ -1100,6 +1187,7 @@ class Ai1ec_Ics_Import_Export_Engine
 			}
 		}
 		$exception_dates = $event->get( 'exception_dates' );
+		$exception_dates = $this->_filter_rule( $exception_dates );
 		if ( ! empty( $exception_dates ) ) {
 			$params    = array(
 				'VALUE' => 'DATE-TIME',
@@ -1250,6 +1338,29 @@ class Ai1ec_Ics_Import_Export_Engine
 		);
 		$exclusions[$e->getProperty( 'uid' )][] = $exdate;
 		return $exclusions;
+	}
+
+	/**
+	 * Filter recurrence / exclusion rule or dates. Avoid throwing exception for old, malformed values.
+	 *
+	 * @param string $rule Rule or dates value.
+	 *
+	 * @return string Fixed rule or dates value.
+	 */
+	protected function _filter_rule( $rule ) {
+		if ( null === $this->_rule_filter ) {
+			$this->_rule_filter = $this->_registry->get( 'recurrence.rule' );
+		}
+		return $this->_rule_filter->filter_rule( $rule );
+	}
+
+	/**
+	 * Remove the Ticket URL that maybe exists inside the field Description of the Event
+	 */
+	protected function _remove_ticket_url( $description ) {
+		return preg_replace( '/<p>[^<>]+<a[^<>]+class=[\'"]?ai1ec-ticket-url-exported[\'"]?[^<>]+>.[^<>]+<\/a>[\.\s]*<\/p>/'
+				, ''
+				, $description );
 	}
 
 }

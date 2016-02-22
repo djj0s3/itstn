@@ -28,11 +28,6 @@
     'eventStubAllDayTextShadow' => 'rgba(255,255,255,0.4)',
     'eventText' => '#b0b0b0',
     'eventTimeBackground' => '#000000',
-    'featured-bg' => '#333',
-    'featured-font-family-title' => '"League Gothic", Impact, "Arial Black", Arial, sans-serif',
-    'featured-font-size-main-title' => '39px',
-    'featured-font-size-widget-title' => '39px',
-    'featured-text-color' => '#fff',
     'inputBackground' => '#000000',
     'inputBorder' => '#404040',
     'inputBorderFocus' => 'rgba(82,168,236,0.8)',
@@ -43,31 +38,11 @@
     'linkColorHover' => '#94b2d1',
     'monthViewDateBackground' => '#001829',
     'placeholderText' => '#555',
-    'posterboardDateTitleText' => '#ffffff',
-    'posterboardFooterBg' => '#282828',
-    'posterboardImageBorder' => 'rgba(0,0,0,0)',
-    'posterboardImagePadding' => '#333',
-    'posterboardImagePaddingWidth' => '8px',
-    'posterboardMainBg' => 'rgba(0, 0, 0, 0)',
-    'posterboardTileBg' => '#222',
-    'posterboardTileBorder' => 'rgba(0,0,0,0)',
-    'posterboardTileShadow' => 'rgba(0,0,0,0.4)',
-    'saasThemeDateBlockBackgroundColor' => '#539a00',
-    'saasThemeDateBlockColor' => '#fff',
-    'saasThemePageTitleFontColor' => '#000',
-    'saasThemePageTitleFontFamily' => '"Helvetica Neue", Helvetica, Arial, sans-serif',
-    'saasThemePageTitleFontSize' => '68px',
-    'streamDateTitleBackground' => '#222222',
-    'streamDateTitleText' => '#777777',
-    'streamEventBackground' => '#000000',
-    'streamEventBorder' => '#2c2c2c',
     'tableBackground' => '#000000',
     'tableLabelBackground' => '#303030',
     'tableLabelText' => '#6a6a6a',
     'textColor' => '#b0b0b0',
     'textEmboss' => 'rgba(0,0,0,0)',
-    'titleFontFamily' => '"League Gothic", Impact, "Arial Black", Arial, sans-serif',
-    'titleFontSize' => '30px',
     'todayColor' => '#002743',
   ),
   'files' => 
@@ -77,15 +52,10 @@
       'size' => 14631,
       'sha1' => '392648457a8e5ed25edb7f1509683611afc18b4d',
     ),
-    'less\\big_filtering.less' => 
-    array (
-      'size' => 1940,
-      'sha1' => 'feb1d6988a45423c9efb963a199e2ccc9b45b385',
-    ),
     'less\\bootstrap\\alerts.less' => 
     array (
-      'size' => 1502,
-      'sha1' => '6ac6fc0607423976830fec799dccebc50de687e7',
+      'size' => 1643,
+      'sha1' => '3430045a53a78ef713234721153a866c04a321e3',
     ),
     'less\\bootstrap\\badges.less' => 
     array (
@@ -284,38 +254,18 @@
     ),
     'less\\calendar.less' => 
     array (
-      'size' => 17172,
-      'sha1' => 'f0db2abf437a322da4ed45aa1ff8890b0e0486c5',
-    ),
-    'less\\cfg-icons.less' => 
-    array (
-      'size' => 18008,
-      'sha1' => '3526bbb30d4df3c138de11479a9cd50a05200e7d',
+      'size' => 17309,
+      'sha1' => '830fc0d021de8720f122954a5cdfd801a1c427a1',
     ),
     'less\\common-widgets.less' => 
     array (
       'size' => 725,
       'sha1' => '0b39b1d4e35bffe2157468344e1b7f4d06533606',
     ),
-    'less\\custom-filter-groups.less' => 
-    array (
-      'size' => 671,
-      'sha1' => '768aa7f0cfcc8375d8b5597fb3062c098adc3cf8',
-    ),
     'less\\event.less' => 
     array (
-      'size' => 3129,
-      'sha1' => '7214dc06fb042082580bc33367a7a1aa207823ba',
-    ),
-    'less\\extended_views.less' => 
-    array (
-      'size' => 8808,
-      'sha1' => '411c9d6d50e73328d73212c05ef6d30961037852',
-    ),
-    'less\\featured_events.less' => 
-    array (
-      'size' => 4725,
-      'sha1' => 'ea72d013a9f912c6ab7f722919b6ed1fc06cd48d',
+      'size' => 3362,
+      'sha1' => '485373e63567f4d95e96f066027ae73659953611',
     ),
     'less\\font-awesome\\bordered-pulled.less' => 
     array (
@@ -382,20 +332,10 @@
       'size' => 10665,
       'sha1' => '8d7d0d81e445093ecc58577605c36320d2741ba7',
     ),
-    'less\\font-league-gothic.less' => 
+    'less\\override.less' => 
     array (
-      'size' => 677,
-      'sha1' => 'fad7c34931c2a1d45a19d882391210f61f966002',
-    ),
-    'less\\fonts\\font-league-gothic.less' => 
-    array (
-      'size' => 701,
-      'sha1' => '89b46142781608d697ec18cc444d171d1b8179f7',
-    ),
-    'less\\interactive_frontend.less' => 
-    array (
-      'size' => 2689,
-      'sha1' => '1757229df9f45c4c559d054d5d1ab130df707db1',
+      'size' => 252,
+      'sha1' => '3a6f13f271b446835de767a40915ba0d3e682a8a',
     ),
     'less\\plugins\\datepicker3.less' => 
     array (
@@ -417,15 +357,10 @@
       'size' => 3946,
       'sha1' => 'b20c2d939abce946e6456845df993a8043e9e1ae',
     ),
-    'less\\saas-theme.less' => 
-    array (
-      'size' => 4921,
-      'sha1' => '6f5b921928f31c52abf57ea1f953462f4aa7edc4',
-    ),
     'less\\style.less' => 
     array (
-      'size' => 20657,
-      'sha1' => 'b4ce4f3d5d1edd41764c5127f1931172d9f5e192',
+      'size' => 20830,
+      'sha1' => '83fe2a2d17b85b45627ffbb93f4b6cbafcda7ebb',
     ),
     'less\\timely-font-awesome.less' => 
     array (
@@ -444,38 +379,18 @@
     ),
     'less\\user_variables.php' => 
     array (
-      'size' => 7322,
-      'sha1' => '8a2e190b67e93b8ca39382552fbda0deb19baf72',
-    ),
-    'less\\user_variables_ev.php' => 
-    array (
-      'size' => 2875,
-      'sha1' => 'edf0e9b240b3cda3b30b6b835bf6dfedb1047edf',
-    ),
-    'less\\user_variables_he.php' => 
-    array (
-      'size' => 957,
-      'sha1' => 'c2dd56d127fb617bfa5c6c1b2554d39aea737faa',
-    ),
-    'less\\user_variables_st.php' => 
-    array (
-      'size' => 2331,
-      'sha1' => '4cadf8e9182b34ad61e6c4dd54d5b51b951a8037',
+      'size' => 7337,
+      'sha1' => '93bca68cc6169b6e211c4220ff65e34c7a140b10',
     ),
     'less\\variables.less' => 
     array (
-      'size' => 1248,
-      'sha1' => '1d7fcb0178ffdf8a57e8e9c4f2fb2c0dc70e3c7f',
-    ),
-    'less\\venue-details.less' => 
-    array (
-      'size' => 839,
-      'sha1' => 'd785a9269c8ece0ee79922d0311a068badf2ad21',
+      'size' => 1424,
+      'sha1' => '1d1791f4334d063971673c2b55227d4655077d83',
     ),
     'style.css' => 
     array (
-      'size' => 213,
-      'sha1' => 'd2d11e0f5366362d3c0cc77b0b36915841f2988d',
+      'size' => 267,
+      'sha1' => '860be5e3b568d69d4f6134425bada531b7314acf',
     ),
   ),
 );

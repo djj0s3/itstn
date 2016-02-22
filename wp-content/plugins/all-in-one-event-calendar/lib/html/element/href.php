@@ -26,6 +26,7 @@ class Ai1ec_Html_Element_Href {
 		'auth_ids',
 		'post_ids',
 		'tag_ids',
+		'instance_ids',
 		'events_limit',
 		'request_format',
 	);
@@ -102,6 +103,13 @@ class Ai1ec_Html_Element_Href {
 				$args['_extra_used_parameters']
 			);
 		}
+		$this->used_paramaters = array_merge(
+			$this->used_paramaters,
+			apply_filters(
+				'ai1ec_view_args_for_view',
+				array()
+			)
+		);
 	}
 
 	/**

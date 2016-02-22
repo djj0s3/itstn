@@ -6,13 +6,12 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2015  Chad Butler
+ * Copyright (c) 2006-2016  Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
- * @package WordPress
- * @subpackage WP-Members
+ * @package WP-Members
  * @author Chad Butler
- * @copyright 2006-2015
+ * @copyright 2006-2016
  *
  * Functions included:
  * - wpmem_a_do_warnings
@@ -77,9 +76,11 @@ function wpmem_a_do_warnings( $did_update ) {
 
 	// Haven't entered recaptcha api keys.
 	if ( $warnings_off && $wpmem->captcha == 1 ) {
-		$wpmem_captcha = get_option('wpmembers_captcha');
-		if ( !$wpmem_captcha['recaptcha']['public'] || !$wpmem_captcha['recaptcha']['private'] ) {
-			wpmem_a_warning_msg(6);
+		$wpmem_captcha = get_option( 'wpmembers_captcha' );
+		if ( isset( $wpmem_captcha['recaptcha'] ) ) {
+			if ( ! $wpmem_captcha['recaptcha']['public'] || ! $wpmem_captcha['recaptcha']['private'] ) {
+				wpmem_a_warning_msg(6);
+			}
 		}
 	}
 
@@ -225,4 +226,4 @@ function butlerblog_feed_output() {
     echo "</div>";
 }
 
-/** End of File **/
+// End of file.

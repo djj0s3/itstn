@@ -444,6 +444,7 @@ input.ai1ec-timepicker[readonly] {
 	a:hover {
 		font-weight: normal;
 		text-decoration: none !important;
+		box-shadow: none;
 	}
 	img {
 		background: none;
@@ -477,6 +478,12 @@ input.ai1ec-timepicker[readonly] {
 		background: none;
 		border: 0;
 		padding: 0;
+	}
+	.ai1ec-pagination {
+		a.ai1ec-prev-page i,
+		a.ai1ec-next-page i {
+			font-size: inherit !important;
+		}
 	}
 }
 
@@ -986,4 +993,8 @@ a.ai1ec-custom-filter {
 .ai1ec-popup-excerpt {
 	font-size: @font-size-base * 0.85;
 	margin-top: 2px;
+}
+
+img[data-ai1ec-hidden] {
+	display: none;
 }

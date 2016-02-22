@@ -1,11 +1,11 @@
 === All-in-One Event Calendar ===
-Contributors: hubrik, vtowel, yani.iliev, nicolapeluchetti, jbutkus, lpawlik, bangelov
+Contributors: uchu, calvinyeh, elirenato, hubrik, vtowel, yani.iliev, nicolapeluchetti, jbutkus, lpawlik, bangelov
 Tags: calendar, events, ics, ics feed, wordpress ical importer, google
 calendar, ical, iCalendar, all-in-one, events sync, events widget,
 calendar widget
 Requires WordPress at least: 3.5
-Tested up to: 4.1
-Stable tag: 2.2.1
+Tested up to: 4.4.2
+Stable tag: 2.3.10
 License: GNU General Public License, version 3 (GPL-3.0)
 
 A calendar system with many views, upcoming events widget, color-coded
@@ -98,7 +98,7 @@ You can help translate by going to
 If your goal is to run a community event calendar, Timely's All-in-one
 Event Calendar has everything you'll need.
 
-http://vimeo.com/55904173
+https://vimeo.com/135004810
 
 = Helpful Links =
 
@@ -135,7 +135,89 @@ http://vimeo.com/55904173
 * Filter by post ids (separate IDs by comma):
 **[ai1ec post_id="1, 2"]**
 
+* Hide filter toolbar: **[ai1ec display_filters="false"]**
+* Limit number of events per page: **[ai1ec events_limit="5"]**
+* Select a different start date: 
+**[ai1ec exact_date="5-10-2015"]**
+
 == Changelog ==
+
+= Version 2.3.10 =
+* Initial ticketing implementation - If you want to be a Beta user for this exciting new feature, then please visit [this page](https://time.ly/ticketing_beta).
+
+= Version 2.3.9 =
+* Improved JS caching stability in different environments
+* Improved automatically detection of line ending style and fixed CSV import issues for files created in Mac OS X
+* Improved the alert displaying an error (often a "Syntax error") with the details of the wrong response received from server
+* Fixed the text in the "Venue location" - correct symbols instead of HTML
+* Fixed cloning events with Duplicate Post plugin conflicts are resolved
+* Fixed: "Shortcodes" Calendars now work correctly
+* Fixed: Empty Calendar view caused by a MySQL error in the server log
+* Fixed: The last version was showing the event as "free event" unless you enter a ticket url
+* Fixed: "Cost" and "External Tickets URL" fields are no longer required for paid events
+* Fixed: Featured images appears on the Event details popup
+
+= Version 2.3.8 =
+* Improved Calendar views loading speed and caching
+* Improved loading speed of SuperWidget and other external widgets
+* Improved Enabled Frontend Rendering by default
+* Fixed: Plugin does not clean up DB after being uninstalled
+* Fixed: Translations are not working anymore for all words
+* Fixed: Feed import feature does not import for Repeat custom dates
+
+= Version 2.3.7 =
+* Fixes DB update issue on some sites. Reverted changes made on version 2.3.5 related to the ICS Feed URL column type.
+
+= Version 2.3.6 =
+* Fixed compatibility with PHP 5.2
+
+= Version 2.3.5 =
+* Fixed compatibility with WordPress 4.4
+* Event location details Google maps pin marks the wrong place
+* When an event with ticket option is exported to an ICS feed, the description will include the "Buy ticket URL" (if filled)
+* Fixed ICS import issue
+
+= Version 2.3.4 =
+* Fixed ICS import issue
+
+= Version 2.3.3 =
+* Fixed bug with month view navigation
+
+= Version 2.3.2 =
+* Confirmed compatibility with WordPress 4.3
+
+= Version 2.3.1 =
+* Fixing piece of code that was incompatible with PHP versions prior
+to 5.3 while we strive to provide good experience to all WordPress
+users
+
+= Version 2.3.0 =
+* Some custom recurrence rules (having multiple definitions) weren't
+correctly processed
+* Sometimes links to other dates weren't showing on Agenda view
+* Edits to a recurring event would fail to save
+* Settings page would fail to load in rare circumstances
+* Updates were failing with some PHP versions
+* Dates would not change when navigating back in time
+* Make sure event preview is not showing unreadable characters (HTML)
+* Tag and Category names can now contain apostrophe
+* Remove code related to inclusion in Time.ly Network of calendars (was
+working only if user opted-in)
+* Deleting an event instance before saving no longer affects the main
+recurring event
+* Event Contributor role now can edit events
+* Editing custom recurrence dates now displays them in the date picker
+* Made it easier to detect and interact with events rendering using
+JavaScript
+* Rendering proper page while calendar is not fully configured
+* Made it possible for 3rd party developers to add buttons to event
+details page .ics feeds can now be edited. 
+* Made it possible for 3rd party developers to add elements to ICS feeds
+import screen
+* Made it possible to filter by author
+* Calendar should load a bit faster due to different JavaScript
+placement
+* Allowed Newsletters to include events occuring far in the future
 
 = Version 2.2.1 =
 * Fixed ICS issue where old events were imported when option was not

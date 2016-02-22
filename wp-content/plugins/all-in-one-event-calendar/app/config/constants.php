@@ -50,7 +50,7 @@ function ai1ec_initiate_constants( $ai1ec_base_dir, $ai1ec_base_url ) {
 	// = Plugin Version =
 	// ==================
 	if ( ! defined( 'AI1EC_VERSION' ) ) {
-		define( 'AI1EC_VERSION', '2.2.1' );
+		define( 'AI1EC_VERSION', '2.3.10' );
 	}
 
 	// ================
@@ -341,17 +341,6 @@ function ai1ec_initiate_constants( $ai1ec_base_dir, $ai1ec_base_url ) {
 		define( 'AI1EC_ALTERNATIVE_ARCHIVE_URL', 'ai1ec_events_archive' );
 	}
 
-	// ===============================
-	// = Time.ly redirection service =
-	// ===============================
-	if ( ! defined( 'AI1EC_REDIRECTION_SERVICE' ) ) {
-		define(
-			'AI1EC_REDIRECTION_SERVICE',
-			'http://aggregator.time.ly/ticket_redirect/'
-		);
-	}
-
-
 	// ===================
 	// = AI1EC Theme URL =
 	// ===================
@@ -473,6 +462,48 @@ function ai1ec_initiate_constants( $ai1ec_base_dir, $ai1ec_base_url ) {
 		define(
 			'AI1EC_FER_ENABLED_TEMPLATES_LIST',
 			'agenda,oneday,week,month,posterboard,stream'
+		);
+	}
+
+	// Defines API URL.
+	if ( ! defined( 'AI1EC_API_URL' ) ) {
+		define(
+			'AI1EC_API_URL',
+			'https://ticketing.time.ly/api/'
+		);
+	}
+
+	// Defines Tickets checkout URL.
+	if ( ! defined( 'AI1EC_TICKETS_CHECKOUT_URL' ) ) {
+		define(
+			'AI1EC_TICKETS_CHECKOUT_URL',
+			'https://ticketing.time.ly/events/{event_id}/checkout'
+		);
+	}
+	
+	// Defines if Timely API is enabled.
+	if ( ! defined( 'AI1EC_API' ) ) {
+		define(
+			'AI1EC_API',
+			false
+		);
+	}
+	
+	// Enables Ticketing features.
+	if ( ! defined( 'AI1EC_API_TICKETING' ) ) {
+		define(
+			'AI1EC_API_TICKETING',
+			false
+		);
+	}
+
+	// ================================================
+	// = Force WordPress updates command link         =
+	// ================================================
+	if ( ! defined( 'AI1EC_FORCE_UPDATES_URL' ) ) {
+		define(
+			'AI1EC_FORCE_UPDATES_URL',
+			AI1EC_ADMIN_BASE_URL . '&ai1ec_force_updates=true'
 		);
 	}
 }

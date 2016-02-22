@@ -80,12 +80,34 @@ class Ai1ec_Command_Resolver {
 		);
 		$this->add_command(
 			$registry->get(
+				'command.save-ticketing-invitation',
+				$request,
+				array(
+					'action'       => 'ai1ec_ticketing_invitation_save',
+					'nonce_action' => Ai1ec_View_Admin_Ticketing_Invitation::NONCE_ACTION,
+					'nonce_name'   => Ai1ec_View_Admin_Ticketing_Invitation::NONCE_NAME,
+				)
+			)
+		);
+		$this->add_command(
+			$registry->get(
 				'command.save-theme-options',
 				$request,
 				array(
 					'action' => 'ai1ec_save_theme_options',
 					'nonce_action' => Ai1ec_View_Theme_Options::NONCE_ACTION,
 					'nonce_name' => Ai1ec_View_Theme_Options::NONCE_NAME,
+				)
+			)
+		);
+		$this->add_command(
+			$registry->get(
+				'command.api-ticketing-signup',
+				$request,
+				array(
+					'action'       => 'ai1ec_api_ticketing_signup',
+					'nonce_action' => Ai1ec_View_Tickets::NONCE_ACTION,
+					'nonce_name'   => Ai1ec_View_Tickets::NONCE_NAME,
 				)
 			)
 		);
@@ -99,6 +121,16 @@ class Ai1ec_Command_Resolver {
 				'command.compile-core-css', $request
 			)
 		);
+		if (
+			is_admin() &&
+			current_user_can( 'activate_plugins' )
+		) {
+			$this->add_command(
+				$registry->get(
+					'command.check-updates', $request
+				)
+			);
+		}
 		$request->parse();
 		$this->_registry = $registry;
 		$this->_request  = $request;
